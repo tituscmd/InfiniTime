@@ -64,10 +64,18 @@ void HeartRateTask::Work() {
       }
     }
 
-    if (state == States::BackgroundWaiting) {
-      HandleBackgroundWaiting();
-    } else if (state == States::BackgroundMeasuring || state == States::Measuring) {
-      HandleSensorData(&lastBpm);
+    switch (state) {
+      case States::BackgroundWaiting:
+        HandleBackgroundWaiting();
+        break;
+      case States::BackgroundMeasuring:
+      case States::Measuring:
+        HandleSensorData(&lastBpm);
+        break;
+      case States::Idle:
+      case States::Running:
+        // nothing to do -> ignore
+        break;
     }
   }
 }
