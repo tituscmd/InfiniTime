@@ -20,27 +20,18 @@ namespace Pinetime {
     class HeartRateTask {
     public:
       enum class Messages : uint8_t {
-        // Screen gets turned off
         GoToSleep,
-        // Screen gets turned on
         WakeUp,
-        // Start button pressed
         StartMeasurement,
-        // Stop button pressed
         StopMeasurement
       };
 
       enum class States {
-        // Screen turned off, heartrate not measured
-        Idle,
-        // Screen turned on, heartrate app open, heartrate not measured
-        Running,
-        // Screen turned on, heartrate app open, heartrate actively measured
-        Measuring,
-        // Screen turned off, heartrate task is waiting until the next measurement should be started
-        BackgroundWaiting,
-        // Screen turned off, heartrate actively measured
-        BackgroundMeasuring
+        ScreenOnAndStopped,
+        ScreenOnAndMeasuring,
+        ScreenOffAndStopped,
+        ScreenOffAndWaiting,
+        ScreenOffAndMeasuring
       };
 
       explicit HeartRateTask(Drivers::Hrs3300& heartRateSensor,
@@ -70,7 +61,7 @@ namespace Pinetime {
 
       TaskHandle_t taskHandle;
       QueueHandle_t messageQueue;
-      States state = States::Running;
+      States state = States::ScreenOnAndStopped;
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
       Controllers::Settings& settings;

@@ -7,12 +7,12 @@ using namespace Pinetime::Applications;
 
 TickType_t CurrentTaskDelay(HeartRateTask::States state, TickType_t ppgDeltaTms) {
   switch (state) {
-    case HeartRateTask::States::Measuring:
-    case HeartRateTask::States::BackgroundMeasuring:
+    case HeartRateTask::States::ScreenOnAndMeasuring:
+    case HeartRateTask::States::ScreenOffAndMeasuring:
       return ppgDeltaTms;
-    case HeartRateTask::States::Running:
+    case HeartRateTask::States::ScreenOnAndStopped:
       return pdMS_TO_TICKS(100);
-    case HeartRateTask::States::BackgroundWaiting:
+    case HeartRateTask::States::ScreenOffAndWaiting:
       return pdMS_TO_TICKS(10000);
     default:
       return portMAX_DELAY;
@@ -65,15 +65,15 @@ void HeartRateTask::Work() {
     }
 
     switch (state) {
-      case States::BackgroundWaiting:
+      case States::ScreenOffAndWaiting:
         HandleBackgroundWaiting();
         break;
-      case States::BackgroundMeasuring:
-      case States::Measuring:
+      case States::ScreenOffAndMeasuring:
+      case States::ScreenOnAndMeasuring:
         HandleSensorData(&lastBpm);
         break;
-      case States::Idle:
-      case States::Running:
+      case States::ScreenOffAndStopped:
+      case States::ScreenOnAndStopped:
         // nothing to do -> ignore
         break;
     }
@@ -106,15 +106,15 @@ void HeartRateTask::StartWaiting() {
 
 void HeartRateTask::HandleGoToSleep() {
   switch (state) {
-    case States::Running:
-      state = States::Idle;
+    case States::ScreenOnAndStopped:
+      state = States::ScreenOffAndStopped;
       break;
-    case States::Measuring:
-      state = States::BackgroundMeasuring;
+    case States::ScreenOnAndMeasuring:
+      state = States::ScreenOffAndMeasuring;
       break;
-    case States::Idle:
-    case States::BackgroundWaiting:
-    case States::BackgroundMeasuring:
+    case States::ScreenOffAndStopped:
+    case States::ScreenOffAndWaiting:
+    case States::ScreenOffAndMeasuring:
       // shouldn't happen -> ignore
       break;
   }
@@ -122,18 +122,18 @@ void HeartRateTask::HandleGoToSleep() {
 
 void HeartRateTask::HandleWakeUp() {
   switch (state) {
-    case States::Idle:
-      state = States::Running;
+    case States::ScreenOffAndStopped:
+      state = States::ScreenOnAndStopped;
       break;
-    case States::BackgroundMeasuring:
-      state = States::Measuring;
+    case States::ScreenOffAndMeasuring:
+      state = States::ScreenOnAndMeasuring;
       break;
-    case States::BackgroundWaiting:
-      state = States::Measuring;
+    case States::ScreenOffAndWaiting:
+      state = States::ScreenOnAndMeasuring;
       StartMeasurement();
       break;
-    case States::Running:
-    case States::Measuring:
+    case States::ScreenOnAndStopped:
+    case States::ScreenOnAndMeasuring:
       // shouldn't happen -> ignore
       break;
   }
@@ -141,15 +141,15 @@ void HeartRateTask::HandleWakeUp() {
 
 void HeartRateTask::HandleStartMeasurement(int* lastBpm) {
   switch (state) {
-    case States::Idle:
-    case States::Running:
-      state = States::Measuring;
+    case States::ScreenOffAndStopped:
+    case States::ScreenOnAndStopped:
+      state = States::ScreenOnAndMeasuring;
       *lastBpm = 0;
       StartMeasurement();
       break;
-    case States::Measuring:
-    case States::BackgroundMeasuring:
-    case States::BackgroundWaiting:
+    case States::ScreenOnAndMeasuring:
+    case States::ScreenOffAndMeasuring:
+    case States::ScreenOffAndWaiting:
       // shouldn't happen -> ignore
       break;
   }
@@ -157,17 +157,17 @@ void HeartRateTask::HandleStartMeasurement(int* lastBpm) {
 
 void HeartRateTask::HandleStopMeasurement() {
   switch (state) {
-    case States::Measuring:
-      state = States::Running;
+    case States::ScreenOnAndMeasuring:
+      state = States::ScreenOnAndStopped;
       StopMeasurement();
       break;
-    case States::BackgroundMeasuring:
-    case States::BackgroundWaiting:
-      state = States::Idle;
+    case States::ScreenOffAndMeasuring:
+    case States::ScreenOffAndWaiting:
+      state = States::ScreenOffAndStopped;
       StopMeasurement();
       break;
-    case States::Running:
-    case States::Idle:
+    case States::ScreenOnAndStopped:
+    case States::ScreenOffAndStopped:
       // shouldn't happen -> ignore
       break;
   }
@@ -180,7 +180,7 @@ void HeartRateTask::HandleBackgroundWaiting() {
 
   TickType_t ticksSinceWaitingStart = xTaskGetTickCount() - backgroundWaitingStart;
   if (ticksSinceWaitingStart >= GetHeartRateBackgroundMeasurementIntervalInTicks()) {
-    state = States::BackgroundMeasuring;
+    state = States::ScreenOffAndMeasuring;
     StartMeasurement();
   }
 }
@@ -207,18 +207,18 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
   if (bpm != 0) {
     *lastBpm = bpm;
     controller.Update(Controllers::HeartRateController::States::Running, bpm);
-    if (state == States::Measuring || IsContinuosModeActivated()) {
+    if (state == States::ScreenOnAndMeasuring || IsContinuosModeActivated()) {
       return;
     }
-    if (state == States::BackgroundMeasuring) {
-      state = States::BackgroundWaiting;
+    if (state == States::ScreenOffAndMeasuring) {
+      state = States::ScreenOffAndWaiting;
       StartWaiting();
     }
   }
   TickType_t ticksSinceMeasurementStart = xTaskGetTickCount() - measurementStart;
-  if (bpm == 0 && state == States::BackgroundMeasuring && !IsContinuosModeActivated() &&
+  if (bpm == 0 && state == States::ScreenOffAndMeasuring && !IsContinuosModeActivated() &&
       ticksSinceMeasurementStart >= DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED) {
-    state = States::BackgroundWaiting;
+    state = States::ScreenOffAndWaiting;
     StartWaiting();
   }
 }
