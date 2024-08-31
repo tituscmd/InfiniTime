@@ -56,7 +56,7 @@ namespace Pinetime {
       void HandleSensorData(int* lastBpm);
 
       TickType_t GetHeartRateBackgroundMeasurementIntervalInTicks();
-      bool IsContinuosModeActivated();
+      bool IsContinuousModeActivated();
       bool IsBackgroundMeasurementActivated();
 
       TaskHandle_t taskHandle;

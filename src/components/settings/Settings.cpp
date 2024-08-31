@@ -13,7 +13,6 @@ void Settings::Init() {
 }
 
 void Settings::SaveSettings() {
-
   // verify if is necessary to save
   if (settingsChanged) {
     SaveSettingsToFile();

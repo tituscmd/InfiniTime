@@ -10,10 +10,8 @@ TickType_t CurrentTaskDelay(HeartRateTask::States state, TickType_t ppgDeltaTms)
     case HeartRateTask::States::ScreenOnAndMeasuring:
     case HeartRateTask::States::ScreenOffAndMeasuring:
       return ppgDeltaTms;
-    case HeartRateTask::States::ScreenOnAndStopped:
-      return pdMS_TO_TICKS(100);
     case HeartRateTask::States::ScreenOffAndWaiting:
-      return pdMS_TO_TICKS(10000);
+      return pdMS_TO_TICKS(1000);
     default:
       return portMAX_DELAY;
   }
@@ -207,7 +205,7 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
   if (bpm != 0) {
     *lastBpm = bpm;
     controller.Update(Controllers::HeartRateController::States::Running, bpm);
-    if (state == States::ScreenOnAndMeasuring || IsContinuosModeActivated()) {
+    if (state == States::ScreenOnAndMeasuring || IsContinuousModeActivated()) {
       return;
     }
     if (state == States::ScreenOffAndMeasuring) {
@@ -216,7 +214,7 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
     }
   }
   TickType_t ticksSinceMeasurementStart = xTaskGetTickCount() - measurementStart;
-  if (bpm == 0 && state == States::ScreenOffAndMeasuring && !IsContinuosModeActivated() &&
+  if (bpm == 0 && state == States::ScreenOffAndMeasuring && !IsContinuousModeActivated() &&
       ticksSinceMeasurementStart >= DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED) {
     state = States::ScreenOffAndWaiting;
     StartWaiting();
@@ -251,7 +249,7 @@ TickType_t HeartRateTask::GetHeartRateBackgroundMeasurementIntervalInTicks() {
   return pdMS_TO_TICKS(ms);
 }
 
-bool HeartRateTask::IsContinuosModeActivated() {
+bool HeartRateTask::IsContinuousModeActivated() {
   return settings.GetHeartRateBackgroundMeasurementInterval() ==
          Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Continuous;
 }
