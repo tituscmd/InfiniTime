@@ -32,7 +32,7 @@ namespace Pinetime {
         static constexpr std::array<Option, 8> options = {{
           {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Off, " Off"},
           {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Continuous, "Cont"},
-          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenSeconds, " 10s"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FifteenSeconds, " 15s"},
           {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtySeconds, " 30s"},
           {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::OneMinute, "  1m"},
           {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FiveMinutes, "  5m"},

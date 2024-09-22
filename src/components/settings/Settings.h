@@ -53,7 +53,7 @@ namespace Pinetime {
       enum class HeartRateBackgroundMeasurementInterval : uint8_t {
         Off,
         Continuous,
-        TenSeconds,
+        FifteenSeconds,
         ThirtySeconds,
         OneMinute,
         FiveMinutes,

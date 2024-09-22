@@ -45,7 +45,6 @@ namespace Pinetime {
       static void Process(void* instance);
       void StartMeasurement();
       void StopMeasurement();
-      void StartWaiting();
 
       void HandleGoToSleep();
       void HandleWakeUp();
@@ -59,6 +58,10 @@ namespace Pinetime {
       bool IsContinuousModeActivated();
       bool IsBackgroundMeasurementActivated();
 
+      TickType_t GetTicksSinceLastMeasurementStarted();
+      bool ShoudStopTryingToGetData();
+      bool ShouldStartBackgroundMeasuring();
+
       TaskHandle_t taskHandle;
       QueueHandle_t messageQueue;
       States state = States::ScreenOnAndStopped;
@@ -66,7 +69,6 @@ namespace Pinetime {
       Controllers::HeartRateController& controller;
       Controllers::Settings& settings;
       Controllers::Ppg ppg;
-      TickType_t backgroundWaitingStart = 0;
       TickType_t measurementStart = 0;
     };
 

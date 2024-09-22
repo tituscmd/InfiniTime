@@ -97,11 +97,6 @@ void HeartRateTask::StopMeasurement() {
   vTaskDelay(100);
 }
 
-void HeartRateTask::StartWaiting() {
-  StopMeasurement();
-  backgroundWaitingStart = xTaskGetTickCount();
-}
-
 void HeartRateTask::HandleGoToSleep() {
   switch (state) {
     case States::ScreenOnAndStopped:
@@ -176,8 +171,7 @@ void HeartRateTask::HandleBackgroundWaiting() {
     return;
   }
 
-  TickType_t ticksSinceWaitingStart = xTaskGetTickCount() - backgroundWaitingStart;
-  if (ticksSinceWaitingStart >= GetHeartRateBackgroundMeasurementIntervalInTicks()) {
+  if (ShouldStartBackgroundMeasuring()) {
     state = States::ScreenOffAndMeasuring;
     StartMeasurement();
   }
@@ -198,34 +192,45 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
     bpm = 0;
   }
 
-  if (*lastBpm == 0 && bpm == 0) {
+  bool notEnoughData = *lastBpm == 0 && bpm == 0;
+  if (notEnoughData) {
     controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
   }
 
   if (bpm != 0) {
     *lastBpm = bpm;
     controller.Update(Controllers::HeartRateController::States::Running, bpm);
-    if (state == States::ScreenOnAndMeasuring || IsContinuousModeActivated()) {
-      return;
-    }
-    if (state == States::ScreenOffAndMeasuring) {
-      state = States::ScreenOffAndWaiting;
-      StartWaiting();
-    }
   }
-  TickType_t ticksSinceMeasurementStart = xTaskGetTickCount() - measurementStart;
-  if (bpm == 0 && state == States::ScreenOffAndMeasuring && !IsContinuousModeActivated() &&
-      ticksSinceMeasurementStart >= DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED) {
+
+  if (state == States::ScreenOnAndMeasuring || IsContinuousModeActivated()) {
+    return;
+  } 
+
+  // state == States::ScreenOffAndMeasuring 
+  //    (because state != ScreenOnAndMeasuring and the only state that enables measuring is ScreenOffAndMeasuring)
+  // !IsContinuousModeActivated()
+
+  if (ShouldStartBackgroundMeasuring()) {
+    // This doesn't change the state but resets the measurment timer, which basically starts the next measurment without resetting the sensor.
+    // This is basically a fall back to continuous mode, when measurments take too long.
+    measurementStart = xTaskGetTickCount();
+    return;
+  }
+
+  bool noDataWithinTimeLimit = bpm == 0 && ShoudStopTryingToGetData();
+  bool dataWithinTimeLimit = bpm != 0;
+  if (dataWithinTimeLimit || noDataWithinTimeLimit) {
     state = States::ScreenOffAndWaiting;
-    StartWaiting();
+    StopMeasurement();
   }
+
 }
 
 TickType_t HeartRateTask::GetHeartRateBackgroundMeasurementIntervalInTicks() {
   int ms;
   switch (settings.GetHeartRateBackgroundMeasurementInterval()) {
-    case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenSeconds:
-      ms = 10 * 1000;
+    case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FifteenSeconds:
+      ms = 15 * 1000;
       break;
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtySeconds:
       ms = 30 * 1000;
@@ -257,4 +262,16 @@ bool HeartRateTask::IsContinuousModeActivated() {
 bool HeartRateTask::IsBackgroundMeasurementActivated() {
   return settings.GetHeartRateBackgroundMeasurementInterval() !=
          Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Off;
+}
+
+TickType_t HeartRateTask::GetTicksSinceLastMeasurementStarted() {
+  return xTaskGetTickCount() - measurementStart;
+}
+
+bool HeartRateTask::ShoudStopTryingToGetData() {
+  return GetTicksSinceLastMeasurementStarted() >= DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED;
+}
+
+bool HeartRateTask::ShouldStartBackgroundMeasuring() {
+  return GetTicksSinceLastMeasurementStarted() >= GetHeartRateBackgroundMeasurementIntervalInTicks();
 }
