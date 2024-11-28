@@ -497,7 +497,7 @@ void DisplayApp::Refresh() {
         LoadNewScreen(Apps::SysInfo, DisplayApp::FullRefreshDirections::Up);
         break;
       case Messages::ButtonDoubleClicked:
-        if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
+        if (!infiniSleepController.IsAlerting() && currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
           LoadNewScreen(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
         }
         break;
