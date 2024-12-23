@@ -33,22 +33,26 @@ namespace Pinetime {
 
         static constexpr std::array<List::Applications, entriesPerScreen * nScreens> entries {{
           {Symbols::sun, "Display", Apps::SettingDisplay},
-          {Symbols::eye, "Wake/Sleep", Apps::SettingWakeUp},
+          {Symbols::eye, "Wake Up", Apps::SettingWakeUp},
           {Symbols::clock, "Time format", Apps::SettingTimeFormat},
           {Symbols::home, "Watch face", Apps::SettingWatchFace},
 
           {Symbols::shoe, "Steps", Apps::SettingSteps},
           {Symbols::heartBeat, "Heartrate", Apps::SettingHeartRate},
-          {Symbols::clock, "Date & Time", Apps::SettingSetDateTime},
+          {Symbols::clock, "Date&Time", Apps::SettingSetDateTime},
           {Symbols::cloudSunRain, "Weather", Apps::SettingWeatherFormat},
-          
-	        {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
-          {Symbols::clock, "Chimes", Apps::SettingChimes},
-          {Symbols::tachometer, "Chime strength", Apps::SettingChimeVibration},
-          {Symbols::tachometer, "Notif. str.", Apps::SettingNotifVibration},
 
+          {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
+          {Symbols::clock, "Chimes", Apps::SettingChimes},
+          {Symbols::none, "Chime strength", Apps::SettingChimeVibration},
+          {Symbols::none, "Notif. str.", Apps::SettingNotifVibration},
           {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
+
           {Symbols::check, "Firmware", Apps::FirmwareValidation},
+<<<<<<< HEAD
+
+=======
+>>>>>>> 5728a4b3e76a85b9d1d0c7e91d1a27718900dab1
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
           {Symbols::list, "About", Apps::SysInfo},
 

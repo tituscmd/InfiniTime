@@ -14,6 +14,7 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::MotorController& motorController,
+                             Pinetime::Controllers::Settings& settingsController,
                              System::SystemTask& systemTask,
                              Modes mode)
   : app {app},
@@ -44,7 +45,7 @@ Notifications::Notifications(DisplayApp* app,
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
       motorController.StartRinging();
     } else {
-      motorController.RunForDuration(35);
+      motorController.RunForDuration(static_cast<uint8_t>(settingsController.GetNotifVibration()));
     }
 
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
@@ -246,8 +247,8 @@ namespace {
 
 Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                                   Pinetime::Controllers::MotorController& motorController)
-  : NotificationItem("Notification",
-                     "No notification to display",
+  : NotificationItem("Notifications",
+                     "No notifications to display",
                      0,
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
@@ -288,7 +289,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_t* alert_type = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
   if (title == nullptr) {
-    lv_label_set_text_static(alert_type, "Notification");
+    lv_label_set_text_static(alert_type, "Notifications");
   } else {
     // copy title to label and replace newlines with spaces
     lv_label_set_text(alert_type, title);

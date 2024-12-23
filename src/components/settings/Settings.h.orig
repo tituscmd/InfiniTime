@@ -338,6 +338,15 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
+      HeartRateBackgroundMeasurementInterval GetHeartRateBackgroundMeasurementInterval() const {
+        return settings.heartRateBackgroundMeasurementInterval;
+      }
+
+      void SetHeartRateBackgroundMeasurementInterval(HeartRateBackgroundMeasurementInterval newHeartRateBackgroundMeasurementInterval) {
+        if (newHeartRateBackgroundMeasurementInterval != settings.heartRateBackgroundMeasurementInterval) {
+          settingsChanged = true;
+        }
+        settings.heartRateBackgroundMeasurementInterval = newHeartRateBackgroundMeasurementInterval;
       void SetNotifVibration(VibrationStrength strength) {
         if (strength != settings.notifVibration) {
           settingsChanged = true;
@@ -358,17 +367,6 @@ namespace Pinetime {
 
       VibrationStrength GetChimeVibration() const {
         return settings.chimeVibration;
-      }
-
-      HeartRateBackgroundMeasurementInterval GetHeartRateBackgroundMeasurementInterval() const {
-        return settings.heartRateBackgroundMeasurementInterval;
-      }
-
-      void SetHeartRateBackgroundMeasurementInterval(HeartRateBackgroundMeasurementInterval newHeartRateBackgroundMeasurementInterval) {
-        if (newHeartRateBackgroundMeasurementInterval != settings.heartRateBackgroundMeasurementInterval) {
-          settingsChanged = true;
-        }
-        settings.heartRateBackgroundMeasurementInterval = newHeartRateBackgroundMeasurementInterval;
       }
 
     private:
@@ -401,10 +399,10 @@ namespace Pinetime {
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
 
+        HeartRateBackgroundMeasurementInterval heartRateBackgroundMeasurementInterval = HeartRateBackgroundMeasurementInterval::Off;#
+        
         VibrationStrength notifVibration = VibrationStrength::Normal;
         VibrationStrength chimeVibration = VibrationStrength::Normal;
-
-        HeartRateBackgroundMeasurementInterval heartRateBackgroundMeasurementInterval = HeartRateBackgroundMeasurementInterval::Off;
       };
 
       SettingsData settings;
