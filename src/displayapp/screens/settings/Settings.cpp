@@ -3,6 +3,7 @@
 #include <functional>
 #include "displayapp/apps/Apps.h"
 #include "displayapp/DisplayApp.h"
+#include "Settings.h"
 
 using namespace Pinetime::Applications::Screens;
 

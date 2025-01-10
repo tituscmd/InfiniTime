@@ -33,7 +33,7 @@ namespace Pinetime {
 
         static constexpr std::array<List::Applications, entriesPerScreen * nScreens> entries {{
           {Symbols::sun, "Display", Apps::SettingDisplay},
-          {Symbols::eye, "Wake Up", Apps::SettingWakeUp},
+          {Symbols::eye, "Wake/Sleep", Apps::SettingWakeUp},
           {Symbols::clock, "Time format", Apps::SettingTimeFormat},
           {Symbols::home, "Watch face", Apps::SettingWatchFace},
 
@@ -44,13 +44,16 @@ namespace Pinetime {
 
           {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
           {Symbols::clock, "Chimes", Apps::SettingChimes},
+          {Symbols::tachometer, "Chime strength", Apps::SettingChimeVibration},
+          {Symbols::tachometer, "Notif. str.", Apps::SettingNotifVibration},
+          
           {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
           {Symbols::check, "Firmware", Apps::FirmwareValidation},
-
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
           {Symbols::list, "About", Apps::SysInfo},
-          {Symbols::none, "None", Apps::None},
-          {Symbols::none, "None", Apps::None},
+          
+          //{Symbols::none, "None", Apps::None},
+          //{Symbols::none, "None", Apps::None},
         }};
         ScreenList<nScreens> screens;
       };
