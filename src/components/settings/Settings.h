@@ -66,7 +66,7 @@ namespace Pinetime {
         OneMinute,
         FiveMinutes,
         TenMinutes,
-        ThirtyMinutes,
+        ThirtyMinutes
       };
 
       Settings(Pinetime::Controllers::FS& fs);
@@ -136,7 +136,7 @@ namespace Pinetime {
           settings.watchFaceInfineat.showSideCover = show;
           settingsChanged = true;
         }
-      };
+      }
 
       bool GetInfineatShowSideCover() const {
         return settings.watchFaceInfineat.showSideCover;
