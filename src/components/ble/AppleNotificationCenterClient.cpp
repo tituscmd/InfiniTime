@@ -165,10 +165,10 @@ int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle,
                                                       ble_gatt_attr* /*attribute*/) {
   if (error->status == 0) {
     NRF_LOG_INFO("ANCS New alert subscribe OK");
-    //DebugNotification("ANCS New alert subscribe OK");
+    // DebugNotification("ANCS New alert subscribe OK");
   } else {
     NRF_LOG_INFO("ANCS New alert subscribe ERROR");
-    //DebugNotification("ANCS New alert subscribe ERROR");
+    // DebugNotification("ANCS New alert subscribe ERROR");
   }
   if (isDescriptorFound == isControlDescriptorFound && isDescriptorFound == isDataDescriptorFound)
     onServiceDiscovered(connectionHandle);
@@ -206,7 +206,7 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     os_mbuf_copydata(event->notify_rx.om, 3, 1, &categoryCount);
     os_mbuf_copydata(event->notify_rx.om, 4, 4, &notificationUuid);
 
-    // bool silent = eventFlags & static_cast<uint8_t>(EventFlags::Silent);
+    bool silent = (eventFlags & static_cast<uint8_t>(EventFlags::Silent)) != 0;
     // bool important = eventFlags & static_cast<uint8_t>(EventFlags::Important);
     bool preExisting = (eventFlags & static_cast<uint8_t>(EventFlags::PreExisting)) != 0;
     // bool positiveAction = eventFlags & static_cast<uint8_t>(EventFlags::PositiveAction);
@@ -224,11 +224,11 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     if (notifications.contains(notificationUuid)) {
       notifications[notificationUuid] = ancsNotif;
-    } else {
+    } else if (!silent) {
       notifications.insert({notificationUuid, ancsNotif});
     }
 
-    if (preExisting || eventId != static_cast<uint8_t>(EventIds::Added)) {
+    if (preExisting || eventId != static_cast<uint8_t>(EventIds::Added) || silent) {
       return;
     }
 
@@ -255,18 +255,18 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     ble_gattc_write_flat(event->notify_rx.conn_handle, controlPointHandle, request, sizeof(request), OnControlPointWriteCallback, this);
 
-    NotificationManager::Notification notif;
-    char uuidStr[55];
-    snprintf(uuidStr, sizeof(uuidStr), "iOS Notif.:%08lx\nEvID: %d\nCat: %d\nFlags: %d", notificationUuid, eventId, category, eventFlags);
-    notif.message = std::array<char, 101> {};
-    std::strncpy(notif.message.data(), uuidStr, notif.message.size() - 1);
-    notif.message[10] = '\0';                       // Seperate Title and Message
-    notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
-    notif.size = std::min(std::strlen(uuidStr), notif.message.size());
-    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
-    notificationManager.Push(std::move(notif));
+    // NotificationManager::Notification notif;
+    // char uuidStr[55];
+    // snprintf(uuidStr, sizeof(uuidStr), "iOS Notif.:%08lx\nEvID: %d\nCat: %d\nFlags: %d", notificationUuid, eventId, category, eventFlags);
+    // notif.message = std::array<char, 101> {};
+    // std::strncpy(notif.message.data(), uuidStr, notif.message.size() - 1);
+    // notif.message[10] = '\0';                       // Seperate Title and Message
+    // notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
+    // notif.size = std::min(std::strlen(uuidStr), notif.message.size());
+    // notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    // notificationManager.Push(std::move(notif));
 
-    systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
+    // systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
     // DebugNotification("ANCS Notification received");
   } else if (event->notify_rx.attr_handle == dataSourceHandle || event->notify_rx.attr_handle == dataSourceDescriptorHandle) {
     uint16_t titleSize;
@@ -286,29 +286,11 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
       ancsNotif = notifications[notificationUid];
     }
 
-    std::string decodedTitle;
-    decodedTitle.reserve(titleSize);
-    for (uint16_t i = 0; i < titleSize; ++i) {
-      uint8_t byte;
-      os_mbuf_copydata(event->notify_rx.om, 8 + i, 1, &byte);
-      decodedTitle.push_back(static_cast<char>(byte));
-    }
+    std::string decodedTitle = DecodeUtf8String(event->notify_rx.om, titleSize, 8);
 
-    std::string decodedSubTitle;
-    decodedSubTitle.reserve(subTitleSize);
-    for (uint16_t i = 0; i < subTitleSize; ++i) {
-      uint8_t byte;
-      os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1 + 2 + i, 1, &byte);
-      decodedSubTitle.push_back(static_cast<char>(byte));
-    }
+    std::string decodedSubTitle = DecodeUtf8String(event->notify_rx.om, subTitleSize, 8 + titleSize + 1 + 2);
 
-    std::string decodedMessage;
-    decodedMessage.reserve(messageSize);
-    for (uint16_t i = 0; i < messageSize; ++i) {
-      uint8_t byte;
-      os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1 + 2 + subTitleSize + 1 + 2 + i, 1, &byte);
-      decodedMessage.push_back(static_cast<char>(byte));
-    }
+    std::string decodedMessage = DecodeUtf8String(event->notify_rx.om, messageSize, 8 + titleSize + 1 + 2 + subTitleSize + 1 + 2);
 
     NRF_LOG_INFO("Decoded Title: %s", decodedTitle.c_str());
     NRF_LOG_INFO("Decoded SubTitle: %s", decodedSubTitle.c_str());
@@ -319,8 +301,8 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     if (!incomingCall) {
       if (titleSize >= maxTitleSize) {
-        decodedTitle.resize(maxTitleSize - 3);
-        decodedTitle += "...";
+        /*decodedTitle.resize(maxTitleSize - 3);
+        decodedTitle += "...";*/
         if (!decodedSubTitle.empty()) {
           decodedTitle += " - ";
         } else {
@@ -365,6 +347,12 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
         notifStr += decodedSubTitle + ":";
       }
       notifStr += decodedMessage;
+    }
+
+    // Adjust notification if too long
+    if (notifStr.size() > 100) {
+      notifStr.resize(97);
+      notifStr += "...";
     }
 
     notif.message = std::array<char, 101> {};
@@ -479,4 +467,87 @@ void AppleNotificationCenterClient::DebugNotification(const char* msg) const {
   notificationManager.Push(std::move(notif));
 
   systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
+}
+
+std::string AppleNotificationCenterClient::DecodeUtf8String(os_mbuf* om, uint16_t size, uint16_t offset) {
+  std::string decoded;
+  decoded.reserve(size);
+
+  auto isInFontDefinition = [](uint32_t codepoint) -> bool {
+    // Check if the codepoint falls into the specified font ranges or is explicitly listed
+    return (codepoint >= 0x20 && codepoint <= 0x7E) ||   // Printable ASCII
+           (codepoint >= 0x410 && codepoint <= 0x44F) || // Cyrillic
+           (codepoint == 0x00E4 || codepoint == 0x00F6 || codepoint == 0x00FC || codepoint == 0x00C4 || codepoint == 0x00D6 || codepoint == 0x00DC || codepoint == 0x00DF) || // Umlauts
+           (codepoint == 0x20AC) || // Euro symbol
+           (codepoint == 0x2018) || // curly apostrophe
+           (codepoint == 0x201E || codepoint == 0x201C) || // quotation marks european
+           codepoint == 0xB0;
+  };
+
+  for (uint16_t i = 0; i < size;) {
+    uint8_t byte;
+    if (os_mbuf_copydata(om, offset + i, 1, &byte) != 0) {
+      break; // Handle error in copying data (e.g., log or terminate processing)
+    }
+
+    if (byte <= 0x7F) { // Single-byte UTF-8 (ASCII)
+      if (isInFontDefinition(byte)) {
+        decoded.push_back(static_cast<char>(byte));
+      } else {
+        decoded.append("�"); // Replace unsupported
+      }
+      ++i;
+    } else { // Multi-byte UTF-8
+      // Determine sequence length based on leading byte
+      int sequenceLength = 0;
+      if ((byte & 0xE0) == 0xC0)
+        sequenceLength = 2; // 2-byte sequence
+      else if ((byte & 0xF0) == 0xE0)
+        sequenceLength = 3; // 3-byte sequence
+      else if ((byte & 0xF8) == 0xF0)
+        sequenceLength = 4; // 4-byte sequence
+
+      if (i + sequenceLength > size) {
+        decoded.append("�"); // Incomplete sequence, replace
+        break;
+      }
+
+      // Read the full sequence
+      std::string utf8Char;
+      bool validSequence = true;
+      uint32_t codepoint = 0;
+
+      for (int j = 0; j < sequenceLength; ++j) {
+        uint8_t nextByte;
+        os_mbuf_copydata(om, offset + i + j, 1, &nextByte);
+        utf8Char.push_back(static_cast<char>(nextByte));
+
+        if (j == 0) {
+          // Leading byte contributes significant bits
+          if (sequenceLength == 2)
+            codepoint = nextByte & 0x1F;
+          else if (sequenceLength == 3)
+            codepoint = nextByte & 0x0F;
+          else if (sequenceLength == 4)
+            codepoint = nextByte & 0x07;
+        } else {
+          // Continuation bytes contribute lower bits
+          if ((nextByte & 0xC0) != 0x80) {
+            validSequence = false; // Invalid UTF-8 continuation byte
+            break;
+          }
+          codepoint = (codepoint << 6) | (nextByte & 0x3F);
+        }
+      }
+
+      if (validSequence && isInFontDefinition(codepoint)) {
+        decoded.append(utf8Char); // Append valid UTF-8 character
+      } else {
+        decoded.append("�"); // Replace unsupported
+      }
+      i += sequenceLength;
+    }
+  }
+
+  return decoded;
 }
