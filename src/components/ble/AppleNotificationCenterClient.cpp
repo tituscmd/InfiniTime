@@ -477,10 +477,11 @@ std::string AppleNotificationCenterClient::DecodeUtf8String(os_mbuf* om, uint16_
     // Check if the codepoint falls into the specified font ranges or is explicitly listed
     return (codepoint >= 0x20 && codepoint <= 0x7E) ||   // Printable ASCII
            (codepoint >= 0x410 && codepoint <= 0x44F) || // Cyrillic
-           (codepoint == 0x00E4 || codepoint == 0x00F6 || codepoint == 0x00FC || codepoint == 0x00C4 || codepoint == 0x00D6 || codepoint == 0x00DC || codepoint == 0x00DF) || // Umlauts
+           (codepoint == 0x00E4 || codepoint == 0x00F6 || codepoint == 0x00FC || codepoint == 0x00C4 || codepoint == 0x00D6 || codepoint == 0x00DC || codepoint == 0x00DF) || // German Umlauts
            (codepoint == 0x20AC) || // Euro symbol
-           (codepoint == 0x2018) || // curly apostrophe
-           (codepoint == 0x201E || codepoint == 0x201C) || // quotation marks european
+           (codepoint == 0x2018 || codepoint == 0x2019) || // missing apostrophes
+           (codepoint == 0x201E || codepoint == 0x201C || codepoint == 0x201D) || // additional quotation marks
+           (codepoint == 0x2026) || // its just this: ...
            codepoint == 0xB0;
   };
 
