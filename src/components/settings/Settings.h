@@ -136,7 +136,7 @@ namespace Pinetime {
           settings.watchFaceInfineat.showSideCover = show;
           settingsChanged = true;
         }
-      }
+      };
 
       bool GetInfineatShowSideCover() const {
         return settings.watchFaceInfineat.showSideCover;
