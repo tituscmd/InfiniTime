@@ -27,7 +27,7 @@ namespace {
 WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
                                                    const Controllers::Battery& batteryController,
                                                    const Controllers::Ble& bleController,
-                                                   Controllers::NotificationManager& notificatioManager,
+                                                   Controllers::NotificationManager& notificationManager,
                                                    Controllers::Settings& settingsController,
                                                    Controllers::HeartRateController& heartRateController,
                                                    Controllers::MotionController& motionController,
@@ -38,7 +38,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
-    notificatioManager {notificatioManager},
+    notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
@@ -287,7 +287,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
   lv_obj_realign(bleIcon);
   lv_obj_realign(notificationIcon);
 
-  notificationState = notificatioManager.AreNewNotificationsAvailable();
+  notificationState = notificationManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
@@ -416,7 +416,7 @@ void WatchFaceCasioStyleG7710::UpdateWeatherPosition() {
       lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 110, 30);
       lv_obj_align(label_temperature_segment, nullptr, LV_ALIGN_IN_TOP_RIGHT, -5, 30);
       break;
-    case Controllers::Settings::CasioWeatherSegment::WeekNumber:
+    case Controllers::Settings::CasioWeatherSegment::WeekNumber: // future me, this is the one to change
       lv_obj_set_hidden(label_week_number, true);
 
       lv_obj_set_hidden(label_temperature, false);
