@@ -27,9 +27,9 @@ int OnANCSDescriptorDiscoveryEventCallback(uint16_t conn_handle,
   return client->OnDescriptorDiscoveryEventCallback(conn_handle, error, chr_val_handle, dsc);
 }
 
-int NewAlertSubcribeCallback(uint16_t conn_handle, const struct ble_gatt_error* error, struct ble_gatt_attr* attr, void* arg) {
+int NewAlertSubscribeCallback(uint16_t conn_handle, const struct ble_gatt_error* error, struct ble_gatt_attr* attr, void* arg) {
   auto client = static_cast<AppleNotificationCenterClient*>(arg);
-  return client->OnNewAlertSubcribe(conn_handle, error, attr);
+  return client->OnNewAlertSubscribe(conn_handle, error, attr);
 }
 
 int OnControlPointWriteCallback(uint16_t conn_handle, const struct ble_gatt_error* error, struct ble_gatt_attr* attr, void* arg) {
@@ -127,8 +127,8 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
         notificationSourceDescriptorHandle = descriptor->handle;
         isDescriptorFound = true;
         uint8_t value[2] {1, 0};
-        ble_gattc_write_flat(connectionHandle, notificationSourceDescriptorHandle, value, sizeof(value), NewAlertSubcribeCallback, this);
-        ble_gattc_write_flat(connectionHandle, ancsEndHandle, value, sizeof(value), NewAlertSubcribeCallback, this);
+        ble_gattc_write_flat(connectionHandle, notificationSourceDescriptorHandle, value, sizeof(value), NewAlertSubscribeCallback, this);
+        ble_gattc_write_flat(connectionHandle, ancsEndHandle, value, sizeof(value), NewAlertSubscribeCallback, this);
       }
     } else if (characteristicValueHandle == controlPointHandle && ble_uuid_cmp(&controlPointChar.u, &descriptor->uuid.u)) {
       if (controlPointDescriptorHandle == 0) {
@@ -144,7 +144,7 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
         dataSourceDescriptorHandle = descriptor->handle;
         isDataDescriptorFound = true;
         uint8_t value[2] {1, 0};
-        ble_gattc_write_flat(connectionHandle, dataSourceDescriptorHandle, value, sizeof(value), NewAlertSubcribeCallback, this);
+        ble_gattc_write_flat(connectionHandle, dataSourceDescriptorHandle, value, sizeof(value), NewAlertSubscribeCallback, this);
       }
     }
   } else {
@@ -160,7 +160,7 @@ int AppleNotificationCenterClient::OnDescriptorDiscoveryEventCallback(uint16_t c
   return 0;
 }
 
-int AppleNotificationCenterClient::OnNewAlertSubcribe(uint16_t connectionHandle,
+int AppleNotificationCenterClient::OnNewAlertSubscribe(uint16_t connectionHandle,
                                                       const ble_gatt_error* error,
                                                       ble_gatt_attr* /*attribute*/) {
   if (error->status == 0) {
