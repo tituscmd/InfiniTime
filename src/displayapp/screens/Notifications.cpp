@@ -46,7 +46,7 @@ Notifications::Notifications(DisplayApp* app,
     validDisplay = false;
   }
   if (mode == Modes::Preview) {
-    wakeLock.Lock();
+    //wakeLock.Lock();
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
       motorController.StartRinging();
     } else {
@@ -127,7 +127,7 @@ void Notifications::Refresh() {
 }
 
 void Notifications::OnPreviewInteraction() {
-  wakeLock.Release();
+  //wakeLock.Release();
   motorController.StopRinging();
   if (timeoutLine != nullptr) {
     lv_obj_del(timeoutLine);
