@@ -34,22 +34,22 @@ namespace Pinetime {
         static constexpr std::array<List::Applications, entriesPerScreen * nScreens> entries {{
           {Symbols::sun, "Display", Apps::SettingDisplay},
           {Symbols::eye, "Wake/Sleep", Apps::SettingWakeUp},
-          {Symbols::clock, "Time format", Apps::SettingTimeFormat},
-          {Symbols::home, "Watch face", Apps::SettingWatchFace},
-
           {Symbols::shoe, "Steps", Apps::SettingSteps},
-          {Symbols::heartBeat, "Heartrate", Apps::SettingHeartRate},
-          {Symbols::clock, "Date & Time", Apps::SettingSetDateTime},
-          {Symbols::cloudSunRain, "Weather", Apps::SettingWeatherFormat},
-
-          {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
-          {Symbols::clock, "Chimes", Apps::SettingChimes},
-          {Symbols::tachometer, "Chime strength", Apps::SettingChimeVibration},
-          {Symbols::tachometer, "Notif. str.", Apps::SettingNotifVibration},
+          {Symbols::home, "Watch face", Apps::SettingWatchFace},
           
-          {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
+          {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
+          {Symbols::heartBeat, "Heartrate", Apps::SettingHeartRate},
           {Symbols::check, "Firmware", Apps::FirmwareValidation},
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
+          
+          {Symbols::clock, "Date & Time", Apps::SettingSetDateTime},
+          {Symbols::clock, "Time format", Apps::SettingTimeFormat},
+          {Symbols::cloudSunRain, "Weather", Apps::SettingWeatherFormat},
+          {Symbols::clock, "Chimes", Apps::SettingChimes},
+          
+          {Symbols::tachometer, "Chime strength", Apps::SettingChimeVibration},
+          {Symbols::tachometer, "Notif. str.", Apps::SettingNotifVibration},
+          {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
           {Symbols::list, "About", Apps::SysInfo},
           
           //{Symbols::none, "None", Apps::None},
