@@ -24,14 +24,15 @@ Calculator::Calculator() {
   lv_label_set_align(resultLabel, LV_LABEL_ALIGN_RIGHT);
   lv_label_set_text_fmt(resultLabel, "%" PRId64, result);
   lv_obj_set_size(resultLabel, 200, 20);
-  lv_obj_set_pos(resultLabel, 10, 5);
+  lv_obj_set_pos(resultLabel, 10, 35);
 
   valueLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(valueLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(valueLabel, LV_LABEL_ALIGN_RIGHT);
   lv_label_set_text_fmt(valueLabel, "%" PRId64, value);
+  lv_obj_set_style_local_text_color(valueLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_obj_set_size(valueLabel, 200, 20);
-  lv_obj_set_pos(valueLabel, 10, 35);
+  lv_obj_set_pos(valueLabel, 10, 5);
 
   buttonMatrix = lv_btnmatrix_create(lv_scr_act(), nullptr);
   buttonMatrix->user_data = this;
@@ -276,9 +277,13 @@ void Calculator::UpdateValueLabel() {
   switch (error) {
     case Error::TooLarge:
       lv_label_set_text_static(valueLabel, "too large");
+      lv_obj_set_style_local_text_color(valueLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+
       break;
     case Error::ZeroDivision:
       lv_label_set_text_static(valueLabel, "zero division");
+      lv_obj_set_style_local_text_color(valueLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+
       break;
     case Error::None:
     default: {
@@ -307,12 +312,16 @@ void Calculator::UpdateValueLabel() {
 
       if ((integer == 0) && negative) {
         lv_label_set_text_fmt(valueLabel, "-0.%0*" PRId64, minWidth, printRemainder);
+        lv_obj_set_style_local_text_color(valueLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
       } else if (offset == FIXED_POINT_OFFSET) {
         lv_label_set_text_fmt(valueLabel, "%" PRId64, integer);
+        lv_obj_set_style_local_text_color(valueLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
       } else if ((offset == (FIXED_POINT_OFFSET / 10)) && (remainder == 0)) {
         lv_label_set_text_fmt(valueLabel, "%" PRId64 ".", integer);
+        lv_obj_set_style_local_text_color(valueLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
       } else {
         lv_label_set_text_fmt(valueLabel, "%" PRId64 ".%0*" PRId64, integer, minWidth, printRemainder);
+        lv_obj_set_style_local_text_color(valueLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
       }
     } break;
   }
