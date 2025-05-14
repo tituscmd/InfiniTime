@@ -96,11 +96,11 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_font(label_week_number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_dot40);
   lv_label_set_text_static(label_week_number, "WK26");
 
-  label_day_of_year = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_day_of_year, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 30);
-  lv_obj_set_style_local_text_color(label_day_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  lv_obj_set_style_local_text_font(label_day_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
-  lv_label_set_text_static(label_day_of_year, "181-184");
+  label_percent_of_year = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(label_percent_of_year, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 30);
+  lv_obj_set_style_local_text_color(label_percent_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_obj_set_style_local_text_font(label_percent_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
+  lv_label_set_text_static(label_percent_of_year, "50%");
 
   weatherIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
@@ -342,18 +342,19 @@ void WatchFaceCasioStyleG7710::Refresh() {
 
       // TODO: When we start using C++20, use std::chrono::year::is_leap
       int daysInCurrentYear = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 ? 366 : 365;
-      uint16_t daysTillEndOfYearNumber = daysInCurrentYear - dayOfYear;
+      // uint16_t daysTillEndOfYearNumber = daysInCurrentYear - dayOfYear;
 
       char buffer[8];
       strftime(buffer, 8, weekNumberFormat, tmTime);
       uint8_t weekNumber = atoi(buffer);
 
       lv_label_set_text_fmt(label_day_of_week, "%s", dateTimeController.DayOfWeekShortToString());
-      lv_label_set_text_fmt(label_day_of_year, "%3d-%3d", dayOfYear, daysTillEndOfYearNumber);
+      int percentOfYear = (100 * dayOfYear) / daysInCurrentYear;
+      lv_label_set_text_fmt(label_percent_of_year, "%2d%% of yr", percentOfYear);
       lv_label_set_text_fmt(label_week_number, "WK%02d", weekNumber);
 
       lv_obj_realign(label_day_of_week);
-      lv_obj_realign(label_day_of_year);
+      lv_obj_realign(label_percent_of_year);
       lv_obj_realign(label_week_number);
       lv_obj_realign(label_date);
     }
@@ -394,7 +395,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
 }
 
 void WatchFaceCasioStyleG7710::UpdateWeatherPosition() {
-  lv_obj_set_hidden(label_day_of_year, false);
+  lv_obj_set_hidden(label_percent_of_year, false);
   lv_obj_set_hidden(label_week_number, false);
   lv_obj_set_hidden(label_day_of_week, false);
 
@@ -410,7 +411,7 @@ void WatchFaceCasioStyleG7710::UpdateWeatherPosition() {
 
   switch (settingsController.GetCasioWeatherSegment()) {
     case Controllers::Settings::CasioWeatherSegment::DayCounter:
-      lv_obj_set_hidden(label_day_of_year, true);
+      lv_obj_set_hidden(label_percent_of_year, true);
 
       lv_obj_set_hidden(label_temperature_segment, false);
       lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 110, 30);
