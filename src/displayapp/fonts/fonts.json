@@ -82,7 +82,8 @@
          }
       ],
       "bpp": 1,
-      "size": 25,
+      "size": 25
+   },
    "minecraft": {
       "sources": [
          {
@@ -92,6 +93,5 @@
       ],
       "bpp": 1,
       "size": 80
-   }
    }
 }
