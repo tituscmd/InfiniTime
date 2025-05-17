@@ -27,7 +27,8 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController,
                                    Controllers::SimpleWeatherService& weatherService,
-                                   Controllers::MusicService& music)
+                                   Controllers::MusicService& music,
+                                   Controllers::FS& filesystem)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
@@ -37,6 +38,12 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     weatherService {weatherService},
     musicService (music),
     statusIcons(batteryController, bleController, alarmController) {
+
+  lfs_file f = {};
+  if (filesystem.FileOpen(&f, "/fonts/teko.bin", LFS_O_RDONLY) >= 0) {
+    filesystem.FileClose(&f);
+    font_teko = lv_font_load("F:/fonts/teko.bin");
+  }
 
   statusIcons.Create();
 
@@ -48,14 +55,14 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   weatherIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
-  lv_label_set_text(weatherIcon, "");
-  lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_MID, 0, 35);
+  lv_label_set_text_static(weatherIcon, Symbols::ban);
+  lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_MID, 0, 36);
   lv_obj_set_auto_realign(weatherIcon, true);
 
   temperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-  lv_label_set_text(temperature, "");
-  lv_obj_align(temperature, weatherIcon, LV_ALIGN_CENTER, 0, 27);
+  lv_label_set_text_static(temperature, "--°C");
+  lv_obj_align(temperature, weatherIcon, LV_ALIGN_CENTER, 0, 25);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 50);
@@ -67,10 +74,10 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_label_set_long_mode(label_music, LV_LABEL_LONG_SROLL_CIRC);
   lv_obj_set_width(label_music, LV_HOR_RES - 12);
   lv_label_set_align(label_music, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label_music, lv_scr_act(), LV_ALIGN_CENTER, 0, 80);
+  lv_obj_align(label_music, lv_scr_act(), LV_ALIGN_CENTER, 0, 78);
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
+  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko); // Change the font on this one bro, make it stand out
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
   label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
@@ -196,8 +203,8 @@ void WatchFaceDigital::Refresh() {
       lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
     } else {
-      lv_label_set_text_static(temperature, "");
-      lv_label_set_text(weatherIcon, "");
+      lv_label_set_text_static(temperature, "--°");
+      lv_label_set_text(weatherIcon, Symbols::ban);
     }
     lv_obj_realign(temperature);
     lv_obj_realign(weatherIcon);
@@ -206,6 +213,6 @@ void WatchFaceDigital::Refresh() {
   if (track != musicService.getTrack()) {
     track = musicService.getTrack();
     lv_label_set_text_fmt(label_music, "%s %s", Symbols::music, track.data());
-    lv_obj_align(label_music, lv_scr_act(), LV_ALIGN_CENTER, 0, 80);
+    lv_obj_realign(label_music);
   }
 }
