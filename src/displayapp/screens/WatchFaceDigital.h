@@ -38,8 +38,7 @@ namespace Pinetime {
                          Controllers::HeartRateController& heartRateController,
                          Controllers::MotionController& motionController,
                          Controllers::SimpleWeatherService& weather,
-                         Controllers::MusicService& music,
-                         Controllers::FS& fs);
+                         Controllers::MusicService& music);
         ~WatchFaceDigital() override;
 
         void Refresh() override;
@@ -72,8 +71,6 @@ namespace Pinetime {
         lv_obj_t* weatherLabel;
         lv_obj_t* label_battery_value;
         
-        lv_font_t* font_teko = nullptr;
-        
         std::string track;
 
         Controllers::DateTime& dateTimeController;
@@ -104,8 +101,7 @@ namespace Pinetime {
                                              controllers.heartRateController,
                                              controllers.motionController,
                                              *controllers.weatherController,
-                                             *controllers.musicService,
-                                             controllers.filesystem);
+                                             *controllers.musicService);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

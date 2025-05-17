@@ -27,8 +27,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController,
                                    Controllers::SimpleWeatherService& weatherService,
-                                   Controllers::MusicService& music,
-                                   Controllers::FS& filesystem)
+                                   Controllers::MusicService& music)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
@@ -38,12 +37,6 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     weatherService {weatherService},
     musicService (music),
     statusIcons(batteryController, bleController, alarmController) {
-
-  lfs_file f = {};
-  if (filesystem.FileOpen(&f, "/fonts/teko.bin", LFS_O_RDONLY) >= 0) {
-    filesystem.FileClose(&f);
-    font_teko = lv_font_load("F:/fonts/teko.bin");
-  }
 
   statusIcons.Create();
 
