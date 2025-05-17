@@ -82,6 +82,16 @@
          }
       ],
       "bpp": 1,
-      "size": 25
+      "size": 25,
+   "minecraft": {
+      "sources": [
+         {
+            "file": "minecraft.ttf",
+            "symbols": "0123456789:"
+         }
+      ],
+      "bpp": 1,
+      "size": 80
+   }
    }
 }
