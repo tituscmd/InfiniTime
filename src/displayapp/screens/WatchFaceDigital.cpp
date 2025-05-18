@@ -193,6 +193,15 @@ void WatchFaceDigital::Refresh() {
         temp = optCurrentWeather->temperature.Fahrenheit();
         tempUnit = 'F';
       }
+      if (temp <= 0) { // freezing
+        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
+      } else if (temp <= 10) { // ice
+          lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
+      } else if (temp >= 27) { // hot
+          lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::deepOrange);
+      } else {
+        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);  // normal
+      }
       lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
     } else {
