@@ -134,7 +134,7 @@ void Weather::Refresh() {
                                         TemperatureColor(optCurrentWeather->temperature));
       lv_label_set_text(icon, Symbols::GetSymbol(optCurrentWeather->iconId));
       lv_label_set_text(condition, Symbols::GetCondition(optCurrentWeather->iconId));
-      lv_label_set_text_fmt(temperature, "%d°", temp);
+      lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
       lv_label_set_text_fmt(minTemperature, "%d°", minTemp);
       lv_label_set_text_fmt(maxTemperature, "%d°", maxTemp);
     } else {
