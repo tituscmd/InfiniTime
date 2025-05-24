@@ -74,6 +74,16 @@
       "bpp": 1,
       "size": 48
    },
+   "prime": {
+      "sources": [
+         {
+            "file": "KARNIVOR.ttf",
+            "symbols": "0123456789:"
+         }
+      ],
+      "bpp": 1,
+      "size": 85
+   },
    "fontawesome_weathericons": {
       "sources": [
          {

@@ -15,9 +15,9 @@ namespace {
   lv_color_t TemperatureColor(Pinetime::Controllers::SimpleWeatherService::Temperature temp) {
     if (temp.Celsius() <= 0) { // freezing
       return Colors::blue;
-    } else if (temp.Celsius() <= 4) { // ice
+    } else if (temp.Celsius() <= 15) { // ice
       return LV_COLOR_CYAN;
-    } else if (temp.Celsius() >= 27) { // hot
+    } else if (temp.Celsius() >= 25) { // hot
       return Colors::deepOrange;
     }
     return Colors::orange; // normal
@@ -26,9 +26,9 @@ namespace {
   uint8_t TemperatureStyle(Pinetime::Controllers::SimpleWeatherService::Temperature temp) {
     if (temp.Celsius() <= 0) { // freezing
       return LV_TABLE_PART_CELL3;
-    } else if (temp.Celsius() <= 4) { // ice
+    } else if (temp.Celsius() <= 15) { // ice
       return LV_TABLE_PART_CELL4;
-    } else if (temp.Celsius() >= 27) { // hot
+    } else if (temp.Celsius() >= 25) { // hot
       return LV_TABLE_PART_CELL6;
     }
     return LV_TABLE_PART_CELL5; // normal

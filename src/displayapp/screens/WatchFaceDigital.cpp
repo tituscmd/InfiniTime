@@ -49,7 +49,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
   lv_label_set_text_static(weatherIcon, Symbols::ban);
-  lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_MID, 0, 36);
+  lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_MID, 0, 33);
   lv_obj_set_auto_realign(weatherIcon, true);
 
   temperature = lv_label_create(lv_scr_act(), nullptr);
@@ -70,7 +70,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_obj_align(label_music, lv_scr_act(), LV_ALIGN_CENTER, 0, 78);
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed); // font may be subject to change
+  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &prime);
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
   label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
