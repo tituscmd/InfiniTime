@@ -46,7 +46,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   weatherIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
   lv_label_set_text_static(weatherIcon, Symbols::ban);
   lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_MID, 0, 36);
@@ -195,12 +195,14 @@ void WatchFaceDigital::Refresh() {
       }
       if (temp <= 0) { // freezing
         lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
-      } else if (temp <= 10) { // ice
-          lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
-      } else if (temp >= 27) { // hot
-          lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::deepOrange);
-      } else {
-        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);  // normal
+      } else if (temp <= 5) { // near freezing
+        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
+      } else if (temp <= 15) { // early spring
+        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x4db8d1));
+      } else if (temp <= 25) { // warm
+        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
+      } else if (temp >= 25) { // hot
+        lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::deepOrange);
       }
       lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
