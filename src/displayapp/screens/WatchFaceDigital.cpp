@@ -27,7 +27,8 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController,
                                    Controllers::SimpleWeatherService& weatherService,
-                                   Controllers::MusicService& music)
+                                   Controllers::MusicService& music,
+                                   Controllers::FS& filesystem)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
@@ -38,6 +39,12 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     musicService (music),
     statusIcons(batteryController, bleController, alarmController) {
 
+  lfs_file f = {};
+  if (filesystem.FileOpen(&f, "/fonts/primetime.bin", LFS_O_RDONLY) >= 0) {
+    filesystem.FileClose(&f);
+    fontPrimeTime = lv_font_load("F:/fonts/primetime.bin");
+  }
+  
   statusIcons.Create();
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
@@ -219,4 +226,15 @@ void WatchFaceDigital::Refresh() {
     lv_label_set_text_fmt(label_music, "%s %s", Symbols::music, track.data());
     lv_obj_realign(label_music);
   }
+}
+
+bool WatchFacePrimeTime::IsAvailable(Pinetime::Controllers::FS& filesystem) {
+  lfs_file file = {};
+
+  if (filesystem.FileOpen(&file, "/fonts/primetime.bin", LFS_O_RDONLY) < 0) {
+    return false;
+  }
+
+  filesystem.FileClose(&file);
+  return true;
 }

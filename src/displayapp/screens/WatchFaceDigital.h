@@ -43,16 +43,15 @@ namespace Pinetime {
 
         void Refresh() override;
 
-      private:
-        uint8_t displayedHour = -1;
-        uint8_t displayedMinute = -1;
+        static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
-        Utility::DirtyValue<uint32_t> stepCount {};
-        Utility::DirtyValue<uint8_t> heartbeat {};
-        Utility::DirtyValue<bool> heartbeatRunning {};
-        Utility::DirtyValue<bool> notificationState {};
-        Utility::DirtyValue<std::optional<Pinetime::Controllers::SimpleWeatherService::CurrentWeather>> currentWeather {};
+      private:
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime;
+        Utility::DirtyValue<uint32_t> stepCount;
+        Utility::DirtyValue<uint8_t> heartbeat;
+        Utility::DirtyValue<bool> heartbeatRunning;
+        Utility::DirtyValue<bool> notificationState;
+        Utility::DirtyValue<std::optional<Pinetime::Controllers::SimpleWeatherService::CurrentWeather>> currentWeather;
 
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
@@ -81,6 +80,8 @@ namespace Pinetime {
         Controllers::SimpleWeatherService& weatherService;
         Controllers::MusicService& musicService;
 
+        lv_font_t* fontPrimeTime = nullptr;
+
         lv_task_t* taskRefresh;
         Widgets::StatusIcons statusIcons;
       };
@@ -101,11 +102,12 @@ namespace Pinetime {
                                              controllers.heartRateController,
                                              controllers.motionController,
                                              *controllers.weatherController,
-                                             *controllers.musicService);
+                                             *controllers.musicService,
+                                             controllers.filesystem);
       };
 
-      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
-        return true;
+      static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {
+        return Screens::WatchFacePrimeTime::IsAvailable(filesystem);
       }
     };
   }
