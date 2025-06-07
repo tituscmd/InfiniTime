@@ -38,7 +38,8 @@ namespace Pinetime {
                          Controllers::HeartRateController& heartRateController,
                          Controllers::MotionController& motionController,
                          Controllers::SimpleWeatherService& weather,
-                         Controllers::MusicService& music);
+                         Controllers::MusicService& music,
+                         Controllers::FS& filesystem);
         ~WatchFaceDigital() override;
 
         void Refresh() override;
@@ -107,7 +108,7 @@ namespace Pinetime {
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {
-        return Screens::WatchFacePrimeTime::IsAvailable(filesystem);
+        return Screens::WatchFaceDigital::IsAvailable(filesystem);
       }
     };
   }
