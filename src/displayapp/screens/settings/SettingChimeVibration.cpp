@@ -53,7 +53,7 @@ SettingChimeVibration::SettingChimeVibration(
       0,
       1,
       "Chime strength",
-      Symbols::tachometer,
+      Symbols::sliders,
       GetDefaultOption(settingsController.GetChimeVibration()),
       [&settings = settingsController, &motor = motorController](uint32_t index) {
         // Preview current setting

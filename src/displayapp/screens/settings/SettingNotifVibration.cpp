@@ -53,7 +53,7 @@ SettingNotifVibration::SettingNotifVibration(
       0,
       1,
       "Notif. strength",
-      Symbols::tachometer,
+      Symbols::sliders,
       GetDefaultOption(settingsController.GetNotifVibration()),
       [&settings = settingsController, &motor = motorController](uint32_t index) {
         motor.RunForDuration(static_cast<uint8_t>(options[index].vibrationStrength));
