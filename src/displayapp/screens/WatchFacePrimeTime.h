@@ -21,14 +21,15 @@ namespace Pinetime {
     class NotificationManager;
     class HeartRateController;
     class MotionController;
+    class MusicService;
   }
 
   namespace Applications {
     namespace Screens {
 
-      class WatchFaceDigital : public Screen {
+      class WatchFacePrimeTime : public Screen {
       public:
-        WatchFaceDigital(Controllers::DateTime& dateTimeController,
+        WatchFacePrimeTime(Controllers::DateTime& dateTimeController,
                          const Controllers::Battery& batteryController,
                          const Controllers::Ble& bleController,
                          const Controllers::AlarmController& alarmController,
@@ -36,21 +37,22 @@ namespace Pinetime {
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
                          Controllers::MotionController& motionController,
-                         Controllers::SimpleWeatherService& weather);
-        ~WatchFaceDigital() override;
+                         Controllers::SimpleWeatherService& weather,
+                         Controllers::MusicService& music,
+                         Controllers::FS& filesystem);
+        ~WatchFacePrimeTime() override;
 
         void Refresh() override;
 
-      private:
-        uint8_t displayedHour = -1;
-        uint8_t displayedMinute = -1;
+        static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
-        Utility::DirtyValue<uint32_t> stepCount {};
-        Utility::DirtyValue<uint8_t> heartbeat {};
-        Utility::DirtyValue<bool> heartbeatRunning {};
-        Utility::DirtyValue<bool> notificationState {};
-        Utility::DirtyValue<std::optional<Pinetime::Controllers::SimpleWeatherService::CurrentWeather>> currentWeather {};
+      private:
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime;
+        Utility::DirtyValue<uint32_t> stepCount;
+        Utility::DirtyValue<uint8_t> heartbeat;
+        Utility::DirtyValue<bool> heartbeatRunning;
+        Utility::DirtyValue<bool> notificationState;
+        Utility::DirtyValue<std::optional<Pinetime::Controllers::SimpleWeatherService::CurrentWeather>> currentWeather;
 
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
@@ -64,6 +66,12 @@ namespace Pinetime {
         lv_obj_t* notificationIcon;
         lv_obj_t* weatherIcon;
         lv_obj_t* temperature;
+        lv_obj_t* label_music;
+        lv_obj_t* icon_music;
+        lv_obj_t* weatherLabel;
+        lv_obj_t* label_battery_value;
+        
+        std::string track;
 
         Controllers::DateTime& dateTimeController;
         Controllers::NotificationManager& notificationManager;
@@ -71,6 +79,9 @@ namespace Pinetime {
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
         Controllers::SimpleWeatherService& weatherService;
+        Controllers::MusicService& musicService;
+
+        lv_font_t* fontPrimeTime = nullptr;
 
         lv_task_t* taskRefresh;
         Widgets::StatusIcons statusIcons;
@@ -78,12 +89,12 @@ namespace Pinetime {
     }
 
     template <>
-    struct WatchFaceTraits<WatchFace::Digital> {
-      static constexpr WatchFace watchFace = WatchFace::Digital;
-      static constexpr const char* name = "Digital face";
+    struct WatchFaceTraits<WatchFace::PrimeTime> {
+      static constexpr WatchFace watchFace = WatchFace::PrimeTime;
+      static constexpr const char* name = "PrimeTime";
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::WatchFaceDigital(controllers.dateTimeController,
+        return new Screens::WatchFacePrimeTime(controllers.dateTimeController,
                                              controllers.batteryController,
                                              controllers.bleController,
                                              controllers.alarmController,
@@ -91,11 +102,13 @@ namespace Pinetime {
                                              controllers.settingsController,
                                              controllers.heartRateController,
                                              controllers.motionController,
-                                             *controllers.weatherController);
+                                             *controllers.weatherController,
+                                             *controllers.musicService,
+                                             controllers.filesystem);
       };
 
-      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
-        return true;
+      static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {
+        return Screens::WatchFacePrimeTime::IsAvailable(filesystem);
       }
     };
   }

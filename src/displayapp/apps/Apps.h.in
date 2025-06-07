@@ -57,7 +57,8 @@ namespace Pinetime {
       Terminal,
       Json,
       Infineat,
-      CasioStyleG7710
+      CasioStyleG7710,
+      PrimeTime
     };
 
     template <Apps>
