@@ -27,8 +27,8 @@ void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
   lv_obj_set_height(batteryJuice, percentage * 14 / 100);
   lv_obj_realign(batteryJuice);
   if (colorOnLowBattery) {
-    static constexpr int lowBatteryThreshold = 15;
-    static constexpr int criticalBatteryThreshold = 5;
+    static constexpr int lowBatteryThreshold = 20;
+    static constexpr int criticalBatteryThreshold = 10;
     if (percentage > lowBatteryThreshold) {
       SetColor(LV_COLOR_WHITE);
     } else if (percentage > criticalBatteryThreshold) {
