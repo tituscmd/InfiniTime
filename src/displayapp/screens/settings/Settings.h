@@ -38,7 +38,7 @@ namespace Pinetime {
           {Symbols::home, "Watch face", Apps::SettingWatchFace},
           
           {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
-          {Symbols::heartBeat, "Heartrate", Apps::SettingHeartRate},
+          {Symbols::heartBeat, "HRM interval", Apps::SettingHeartRate},
           {Symbols::check, "Firmware", Apps::FirmwareValidation},
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
           
