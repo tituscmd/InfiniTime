@@ -42,7 +42,7 @@ const char* Pinetime::Applications::Screens::Symbols::GetCondition(const Pinetim
     case Pinetime::Controllers::SimpleWeatherService::Icons::CloudsSun:
       return "Few clouds";
     case Pinetime::Controllers::SimpleWeatherService::Icons::Clouds:
-      return "Scattered clouds";
+      return "Cloudy";
     case Pinetime::Controllers::SimpleWeatherService::Icons::BrokenClouds:
       return "Broken clouds";
     case Pinetime::Controllers::SimpleWeatherService::Icons::CloudShowerHeavy:
