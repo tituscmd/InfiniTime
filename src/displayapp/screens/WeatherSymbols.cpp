@@ -15,7 +15,7 @@ const char* Pinetime::Applications::Screens::Symbols::GetSymbol(const Pinetime::
       return Symbols::cloudMeatball;
       break;
     case Pinetime::Controllers::SimpleWeatherService::Icons::Thunderstorm:
-      return Symbols::bolt;
+      return Symbols::cloudBolt;
       break;
     case Pinetime::Controllers::SimpleWeatherService::Icons::Snow:
       return Symbols::snowflake;
