@@ -5,7 +5,7 @@
 #include <components/heartrate/Ppg.h>
 #include "components/settings/Settings.h"
 
-#define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED pdMS_TO_TICKS(30 * 1000)
+#define DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED pdMS_TO_TICKS(30 * 1000)
 
 namespace Pinetime {
   namespace Drivers {
@@ -20,7 +20,8 @@ namespace Pinetime {
     class HeartRateTask {
     public:
       enum class Messages : uint8_t { GoToSleep, WakeUp, StartMeasurement, StopMeasurement };
-      enum class States { Idle, Running, Measuring, BackgroundWaiting, BackgroundMeasuring };
+
+      enum class States { ScreenOnAndStopped, ScreenOnAndMeasuring, ScreenOffAndStopped, ScreenOffAndWaiting, ScreenOffAndMeasuring };
 
       explicit HeartRateTask(Drivers::Hrs3300& heartRateSensor,
                              Controllers::HeartRateController& controller,
@@ -33,24 +34,30 @@ namespace Pinetime {
       static void Process(void* instance);
       void StartMeasurement();
       void StopMeasurement();
-      void StartWaiting();
+
+      void HandleGoToSleep();
+      void HandleWakeUp();
+      void HandleStartMeasurement(int* lastBpm);
+      void HandleStopMeasurement();
 
       void HandleBackgroundWaiting();
       void HandleSensorData(int* lastBpm);
-      TickType_t CurrentTaskDelay();
 
       TickType_t GetHeartRateBackgroundMeasurementIntervalInTicks();
-      bool IsContinuosModeActivated();
+      bool IsContinuousModeActivated();
       bool IsBackgroundMeasurementActivated();
+
+      TickType_t GetTicksSinceLastMeasurementStarted();
+      bool ShoudStopTryingToGetData();
+      bool ShouldStartBackgroundMeasuring();
 
       TaskHandle_t taskHandle;
       QueueHandle_t messageQueue;
-      States state = States::Running;
+      States state = States::ScreenOnAndStopped;
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
       Controllers::Settings& settings;
       Controllers::Ppg ppg;
-      TickType_t backgroundWaitingStart = 0;
       TickType_t measurementStart = 0;
     };
 

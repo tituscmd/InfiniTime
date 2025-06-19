@@ -33,7 +33,7 @@ RUN apt-get update -qq \
       libpixman-1-dev \
       libcairo2-dev \
       libpango-1.0-0 \
-      ibpango1.0-dev \
+      libpango1.0-dev \
       libpangocairo-1.0-0 \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
@@ -64,6 +64,9 @@ RUN bash -c "source /opt/build.sh; GetMcuBoot;"
 
 # Add the infinitime user for connecting devcontainer
 RUN adduser infinitime
-    
+
+# Configure Git to accept the /sources directory as safe
+RUN git config --global --add safe.directory /sources
+
 ENV SOURCES_DIR /sources
 CMD ["/opt/build.sh"]

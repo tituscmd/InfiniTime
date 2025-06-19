@@ -22,7 +22,7 @@
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
 #include <lvgl/lvgl.h>
 #include <cstdio>
-#include <displayapp/Colors.h>
+#include "displayapp/Colors.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/NotificationIcon.h"
@@ -407,7 +407,7 @@ bool WatchFacePineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents ev
   if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnClose)) {
     lv_obj_set_hidden(btnSetColor, false);
     lv_obj_set_hidden(btnSetOpts, false);
-    savedTick = lv_tick_get();
+    savedTick = xTaskGetTickCount();
     return true;
   }
   if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnClose) == false)) {
@@ -543,11 +543,10 @@ void WatchFacePineTimeStyle::Refresh() {
   if (currentWeather.IsUpdated()) {
     auto optCurrentWeather = currentWeather.Get();
     if (optCurrentWeather) {
-      int16_t temp = optCurrentWeather->temperature;
+      int16_t temp = optCurrentWeather->temperature.Celsius();
       if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
-        temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
+        temp = optCurrentWeather->temperature.Fahrenheit();
       }
-      temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
       lv_label_set_text_fmt(temperature, "%d°", temp);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
     } else {
@@ -559,7 +558,7 @@ void WatchFacePineTimeStyle::Refresh() {
   }
 
   if (!lv_obj_get_hidden(btnSetColor)) {
-    if ((savedTick > 0) && (lv_tick_get() - savedTick > 3000)) {
+    if ((savedTick > 0) && (xTaskGetTickCount() - savedTick > pdMS_TO_TICKS(3000))) {
       lv_obj_set_hidden(btnSetColor, true);
       lv_obj_set_hidden(btnSetOpts, true);
       savedTick = 0;
