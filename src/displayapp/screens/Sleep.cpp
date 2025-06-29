@@ -225,6 +225,7 @@ void Sleep::DrawAlarmScreen() {
   lv_obj_set_style_local_text_color(iconSuggestedAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_align(iconSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -50, -13);
   lv_label_set_text_static(iconSuggestedAlarm, Symbols::bed);
+  lv_obj_set_style_local_text_font(iconSuggestedAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 
   enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
   enableSwitch->user_data = this;

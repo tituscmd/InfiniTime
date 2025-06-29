@@ -86,6 +86,7 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
 
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
+  lv_obj_set_style_local_text_font(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
   lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 1);
 
@@ -102,6 +103,8 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
   stepIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0a84ff));
   lv_label_set_text_static(stepIcon, Symbols::shoe);
+  lv_obj_set_style_local_text_font(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
+
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);

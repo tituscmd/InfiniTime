@@ -65,6 +65,7 @@ Tile::Tile(uint8_t screenID,
   btnmMap[btIndex] = "";
 
   btnm1 = lv_btnmatrix_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, &icons);
   lv_btnmatrix_set_map(btnm1, btnmMap);
   lv_obj_set_size(btnm1, LV_HOR_RES - 16, LV_VER_RES - 60);
   lv_obj_align(btnm1, nullptr, LV_ALIGN_CENTER, 0, 10);

@@ -56,6 +56,7 @@ List::List(uint8_t screenID,
       lv_obj_t* icon = lv_label_create(itemApps[i], nullptr);
       lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
       lv_label_set_text_static(icon, applications[i].icon);
+      lv_obj_set_style_local_text_font(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
       lv_label_set_long_mode(icon, LV_LABEL_LONG_CROP);
       lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
       lv_obj_set_width(icon, btnHeight);

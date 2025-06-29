@@ -58,6 +58,7 @@ SettingSetDate::SettingSetDate(Pinetime::Controllers::DateTime& dateTimeControll
   lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
 
   lv_label_set_text_static(icon, Symbols::clock);
+  lv_obj_set_style_local_text_font(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 

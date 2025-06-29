@@ -86,7 +86,9 @@ void StopWatch::SetInterfacePaused() {
   lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
   lv_label_set_text_static(txtPlayPause, Symbols::play);
+  lv_obj_set_style_local_text_font(txtPlayPause, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
   lv_label_set_text_static(txtStopLap, Symbols::stop);
+  lv_obj_set_style_local_text_font(txtStopLap, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 }
 
 void StopWatch::SetInterfaceRunning() {
@@ -96,7 +98,9 @@ void StopWatch::SetInterfaceRunning() {
   lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
 
   lv_label_set_text_static(txtPlayPause, Symbols::pause);
+  lv_obj_set_style_local_text_font(txtPlayPause, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
   lv_label_set_text_static(txtStopLap, Symbols::lapsFlag);
+  lv_obj_set_style_local_text_font(txtStopLap, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 
   lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
   lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
@@ -118,7 +122,9 @@ void StopWatch::SetInterfaceStopped() {
 
   lv_label_set_text_static(lapText, "");
   lv_label_set_text_static(txtPlayPause, Symbols::play);
+  lv_obj_set_style_local_text_font(txtPlayPause, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
   lv_label_set_text_static(txtStopLap, Symbols::lapsFlag);
+  lv_obj_set_style_local_text_font(txtStopLap, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
   lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
   lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
 }

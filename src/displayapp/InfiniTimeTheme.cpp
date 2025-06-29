@@ -200,6 +200,7 @@ static void basic_init() {
   lv_style_reset(&style_cb_bullet);
   lv_style_set_radius(&style_cb_bullet, LV_STATE_DEFAULT, LV_DPX(4));
   lv_style_set_pattern_image(&style_cb_bullet, LV_STATE_CHECKED, LV_SYMBOL_OK);
+  lv_style_set_text_font(&style_cb_bullet, LV_STATE_CHECKED, &icons);
   lv_style_set_pattern_recolor(&style_cb_bullet, LV_STATE_CHECKED, LV_COLOR_WHITE);
   lv_style_set_pad_all(&style_cb_bullet, LV_STATE_DEFAULT, LV_DPX(8));
 }

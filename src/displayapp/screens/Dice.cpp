@@ -113,15 +113,19 @@ Dice::Dice(Controllers::MotionController& motionController,
   lv_obj_align(btnRoll, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   btnRollLabel = MakeLabel(&jetbrains_mono_bold_20,
-                           LV_COLOR_WHITE,
-                           LV_LABEL_LONG_EXPAND,
-                           0,
-                           LV_LABEL_ALIGN_CENTER,
-                           Symbols::dice,
-                           btnRoll,
-                           LV_ALIGN_CENTER,
-                           0,
-                           0);
+                         LV_COLOR_WHITE,
+                         LV_LABEL_LONG_EXPAND,
+                         0,
+                         LV_LABEL_ALIGN_CENTER,
+                         Symbols::dice,
+                         btnRoll,
+                         LV_ALIGN_CENTER,
+                         0,
+                         0);
+  lv_obj_set_style_local_text_font(btnRollLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
+  lv_obj_set_width(btnRollLabel, lv_obj_get_width(btnRoll));
+  lv_label_set_align(btnRollLabel, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(btnRollLabel, btnRoll, LV_ALIGN_CENTER, 0, 0);
 
   // Spagetti code in motion controller: it only updates the shake speed when shake to wake is on...
   enableShakeForDice = !settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake);

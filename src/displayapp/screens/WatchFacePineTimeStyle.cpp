@@ -102,6 +102,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
 
   plugIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(plugIcon, Symbols::plug);
+  lv_obj_set_style_local_text_font(plugIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
   lv_obj_set_style_local_text_color(plugIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_align(plugIcon, sidebar, LV_ALIGN_IN_TOP_MID, 10, 2);
 
@@ -117,6 +118,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
   lv_label_set_text(weatherIcon, Symbols::ban);
+  lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
   lv_obj_align(weatherIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 35);
   lv_obj_set_auto_realign(weatherIcon, true);
   if (settingsController.GetPTSWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {

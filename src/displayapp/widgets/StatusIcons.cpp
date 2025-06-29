@@ -19,12 +19,15 @@ void StatusIcons::Create() {
 
   bleIcon = lv_label_create(container, nullptr);
   lv_label_set_text_static(bleIcon, Screens::Symbols::bluetooth);
+  lv_obj_set_style_local_text_font(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 
   batteryPlug = lv_label_create(container, nullptr);
   lv_label_set_text_static(batteryPlug, Screens::Symbols::plug);
+  lv_obj_set_style_local_text_font(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 
   alarmIcon = lv_label_create(container, nullptr);
   lv_label_set_text_static(alarmIcon, Screens::Symbols::bell);
+  lv_obj_set_style_local_text_font(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 
   batteryIcon.Create(container);
 

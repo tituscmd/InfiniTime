@@ -17,7 +17,6 @@ class Source(object):
         self.range = d.get('range')
         self.symbols = d.get('symbols')
 
-
 def gen_lvconv_line(lv_font_conv: str, dest: str, size: int, bpp: int, sources: typing.List[Source], compress:bool=False):
     args = [lv_font_conv, '--size', str(size), '--output', dest, '--bpp', str(bpp), '--format', 'lvgl']
     if not compress:

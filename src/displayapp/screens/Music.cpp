@@ -64,6 +64,7 @@ Music::Music(Pinetime::Controllers::MusicService& music, Pinetime::Controllers::
   lv_obj_add_style(btnVolDown, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolDown, nullptr);
   lv_label_set_text_static(label, Symbols::volumDown);
+  lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
   lv_obj_set_hidden(btnVolDown, true);
 
   btnVolUp = lv_btn_create(lv_scr_act(), nullptr);
@@ -74,6 +75,7 @@ Music::Music(Pinetime::Controllers::MusicService& music, Pinetime::Controllers::
   lv_obj_add_style(btnVolUp, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolUp, nullptr);
   lv_label_set_text_static(label, Symbols::volumUp);
+  lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
   lv_obj_set_hidden(btnVolUp, true);
 
   btnPrev = lv_btn_create(lv_scr_act(), nullptr);
@@ -84,6 +86,7 @@ Music::Music(Pinetime::Controllers::MusicService& music, Pinetime::Controllers::
   lv_obj_add_style(btnPrev, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnPrev, nullptr);
   lv_label_set_text_static(label, Symbols::stepBackward);
+  lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 
   btnNext = lv_btn_create(lv_scr_act(), nullptr);
   btnNext->user_data = this;
@@ -93,6 +96,7 @@ Music::Music(Pinetime::Controllers::MusicService& music, Pinetime::Controllers::
   lv_obj_add_style(btnNext, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnNext, nullptr);
   lv_label_set_text_static(label, Symbols::stepForward);
+  lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
@@ -102,6 +106,7 @@ Music::Music(Pinetime::Controllers::MusicService& music, Pinetime::Controllers::
   lv_obj_add_style(btnPlayPause, LV_STATE_DEFAULT, &btn_style);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   lv_label_set_text_static(txtPlayPause, Symbols::play);
+  lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 
   txtTrackDuration = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrackDuration, LV_LABEL_LONG_SROLL);
@@ -181,6 +186,7 @@ void Music::Refresh() {
 
   if (playing) {
     lv_label_set_text_static(txtPlayPause, Symbols::pause);
+    lv_obj_set_style_local_text_font(txtPlayPause, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
     if (xTaskGetTickCount() - 1024 >= lastIncrement) {
 
       if (frameB) {
@@ -199,6 +205,7 @@ void Music::Refresh() {
     }
   } else {
     lv_label_set_text_static(txtPlayPause, Symbols::play);
+    lv_obj_set_style_local_text_font(txtPlayPause, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
   }
 }
 

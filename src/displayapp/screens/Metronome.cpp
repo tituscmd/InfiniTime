@@ -66,6 +66,8 @@ Metronome::Metronome(Controllers::MotorController& motorController, System::Syst
   lv_obj_align(playPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   lblPlayPause = lv_label_create(playPause, nullptr);
   lv_label_set_text_static(lblPlayPause, Symbols::play);
+  lv_obj_set_style_local_text_font(lblPlayPause, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
+
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
