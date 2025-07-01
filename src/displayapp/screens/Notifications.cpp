@@ -332,6 +332,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       break;
     case Controllers::NotificationManager::Categories::IncomingCall: {
       lv_obj_set_height(subject_container, 108);
+      lv_label_set_text_static(alert_type, "iPhone");
       lv_label_set_text_static(alert_subject, "Incoming call from");
 
       lv_obj_t* alert_caller = lv_label_create(subject_container, nullptr);
@@ -347,6 +348,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_align(bt_accept, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
       label_accept = lv_label_create(bt_accept, nullptr);
       lv_label_set_text_static(label_accept, Symbols::phone);
+      lv_obj_set_style_local_text_font(label_accept, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
       lv_obj_set_style_local_bg_color(bt_accept, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
 
       bt_reject = lv_btn_create(container, nullptr);
@@ -356,6 +358,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_align(bt_reject, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
       label_reject = lv_label_create(bt_reject, nullptr);
       lv_label_set_text_static(label_reject, Symbols::phoneSlash);
+      lv_obj_set_style_local_text_font(label_reject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
       lv_obj_set_style_local_bg_color(bt_reject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
 
       bt_mute = lv_btn_create(container, nullptr);
@@ -365,6 +368,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_align(bt_mute, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
       label_mute = lv_label_create(bt_mute, nullptr);
       lv_label_set_text_static(label_mute, Symbols::volumMute);
+      lv_obj_set_style_local_text_font(label_mute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
       lv_obj_set_style_local_bg_color(bt_mute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
     } break;
   }
