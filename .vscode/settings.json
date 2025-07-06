@@ -69,6 +69,7 @@
         "ios": "cpp",
         "disc.c": "cpp",
         "disc_f_1.c": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "locale": "cpp"
     }
 }
