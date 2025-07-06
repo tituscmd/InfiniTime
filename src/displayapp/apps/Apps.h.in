@@ -58,6 +58,7 @@ namespace Pinetime {
       Json,
       Infineat,
       CasioStyleG7710,
+      PrideFlag,
       PrimeTime
     };
 

@@ -1,6 +1,7 @@
 #include "displayapp/screens/HeartRate.h"
 #include <lvgl/lvgl.h>
 #include <components/heartrate/HeartRateController.h>
+
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
 #include <chrono>
@@ -96,6 +97,7 @@ void HeartRate::RecenterHrmValue() {
 }
 
 void HeartRate::Refresh() {
+
   auto state = heartRateController.State();
   if (state == Controllers::HeartRateController::States::NoTouch ||
       state == Controllers::HeartRateController::States::NotEnoughData) {
@@ -113,18 +115,19 @@ void HeartRate::Refresh() {
 }
 
 void HeartRate::OnStartStopEvent(lv_event_t event) {
-  if (event != LV_EVENT_CLICKED) return;
-  bool running = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
-  if (running) {
-    heartRateController.Stop();
-    wakeLock.Release();
-    lv_obj_set_style_local_text_color(label_hr_value, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  } else {
-    heartRateController.Start();
-    wakeLock.Lock();
-    lv_obj_set_style_local_text_color(label_hr_value, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
+  if (event == LV_EVENT_CLICKED) {
+    if (heartRateController.State() == Controllers::HeartRateController::States::Stopped) {
+      heartRateController.Enable();
+      UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
+      wakeLock.Lock();
+      lv_obj_set_style_local_text_color(label_hr_value, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
+    } else {
+      heartRateController.Disable();
+      UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
+      wakeLock.Release();
+      lv_obj_set_style_local_text_color(label_hr_value, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+    }
   }
-  UpdateStartStopButton(!running);
 }
 
 void HeartRate::UpdateStartStopButton(bool isRunning) {

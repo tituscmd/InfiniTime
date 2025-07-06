@@ -2,42 +2,39 @@
 
 #include <cstdint>
 #include <lvgl/lvgl.h>
+#include <optional>
+#include <array>
 
 #include "components/settings/Settings.h"
-#include "displayapp/screens/ScreenList.h"
 #include "displayapp/screens/Screen.h"
-#include "displayapp/screens/Symbols.h"
-#include "displayapp/screens/CheckboxList.h"
 
 namespace Pinetime {
 
   namespace Applications {
     namespace Screens {
-
-      struct Option {
-        const Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval interval;
-        const char* name;
-      };
-
       class SettingHeartRate : public Screen {
       public:
-        SettingHeartRate(Pinetime::Controllers::Settings& settings);
+        explicit SettingHeartRate(Pinetime::Controllers::Settings& settings);
         ~SettingHeartRate() override;
 
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
+        struct Option {
+          std::optional<uint16_t> intervalInSeconds;
+          const char* name;
+        };
+
         Pinetime::Controllers::Settings& settingsController;
 
-        static constexpr std::array<Option, 8> options = {{
-          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Off, " Off"},
-          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Continuous, "Cont"},
-          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FifteenSeconds, " 15s"},
-          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtySeconds, " 30s"},
-          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::OneMinute, "  1m"},
-          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FiveMinutes, "  5m"},
-          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenMinutes, " 10m"},
-          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtyMinutes, " 30m"},
+        static constexpr std::array<Option, 7> options = {{
+          {.intervalInSeconds = std::nullopt, .name = " Off"},
+          {.intervalInSeconds = 0, .name = "Cont"},
+          {.intervalInSeconds = 30, .name = " 30s"},
+          {.intervalInSeconds = 60, .name = "  1m"},
+          {.intervalInSeconds = 5 * 60, .name = "  5m"},
+          {.intervalInSeconds = 10 * 60, .name = " 10m"},
+          {.intervalInSeconds = 30 * 60, .name = " 30m"},
         }};
 
         lv_obj_t* cbOption[options.size()];

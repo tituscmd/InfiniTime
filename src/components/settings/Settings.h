@@ -4,6 +4,7 @@
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 #include "displayapp/apps/Apps.h"
+#include <optional>
 
 namespace Pinetime {
   namespace Controllers {
@@ -37,6 +38,7 @@ namespace Pinetime {
       enum class VibrationStrength : uint8_t { Weak = 15, Normal = 35, Strong = 75 };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
+      enum class PrideFlag : uint8_t { Gay, Trans, Bi, Lesbian };
 
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
@@ -171,6 +173,16 @@ namespace Pinetime {
 
       PTSWeather GetPTSWeather() const {
         return settings.PTS.weatherEnable;
+      };
+
+      void SetPrideFlag(PrideFlag prideFlag) {
+        if (prideFlag != settings.prideFlag)
+          settingsChanged = true;
+        settings.prideFlag = prideFlag;
+      };
+
+      PrideFlag GetPrideFlag() const {
+        return settings.prideFlag;
       };
 
       void SetCasioWeather(PTSWeather weatherEnable) {
@@ -338,15 +350,11 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
-      HeartRateBackgroundMeasurementInterval GetHeartRateBackgroundMeasurementInterval() const {
-        return settings.heartRateBackgroundMeasurementInterval;
-      }
-
-      void SetHeartRateBackgroundMeasurementInterval(HeartRateBackgroundMeasurementInterval newHeartRateBackgroundMeasurementInterval) {
-        if (newHeartRateBackgroundMeasurementInterval != settings.heartRateBackgroundMeasurementInterval) {
-          settingsChanged = true;
+      std::optional<uint16_t> GetHeartRateBackgroundMeasurementInterval() const {
+        if (settings.heartRateBackgroundPeriod == std::numeric_limits<uint16_t>::max()) {
+          return std::nullopt;
         }
-        settings.heartRateBackgroundMeasurementInterval = newHeartRateBackgroundMeasurementInterval;
+        return settings.heartRateBackgroundPeriod;
       }
       
       void SetNotifVibration(VibrationStrength strength) {
@@ -355,6 +363,14 @@ namespace Pinetime {
         }
         settings.notifVibration = strength;
       };
+
+      void SetHeartRateBackgroundMeasurementInterval(std::optional<uint16_t> newIntervalInSeconds) {
+        newIntervalInSeconds = newIntervalInSeconds.value_or(std::numeric_limits<uint16_t>::max());
+        if (newIntervalInSeconds != settings.heartRateBackgroundPeriod) {
+          settingsChanged = true;
+        }
+        settings.heartRateBackgroundPeriod = newIntervalInSeconds.value();
+      }
 
       VibrationStrength GetNotifVibration() const {
         return settings.notifVibration;
@@ -394,6 +410,8 @@ namespace Pinetime {
 
         CasioStyleG7710 casio;
 
+	PrideFlag prideFlag = PrideFlag::Gay;
+
         WatchFaceInfineat watchFaceInfineat;
 
         std::bitset<5> wakeUpMode {0};
@@ -401,7 +419,7 @@ namespace Pinetime {
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
 
-        HeartRateBackgroundMeasurementInterval heartRateBackgroundMeasurementInterval = HeartRateBackgroundMeasurementInterval::Off;
+        uint16_t heartRateBackgroundPeriod = std::numeric_limits<uint16_t>::max(); // Disabled by default
 
         VibrationStrength notifVibration = VibrationStrength::Normal;
         VibrationStrength chimeVibration = VibrationStrength::Normal;

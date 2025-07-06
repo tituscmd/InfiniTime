@@ -46,7 +46,7 @@ namespace Pinetime {
           {Symbols::clock, "Time format", Apps::SettingTimeFormat},
           {Symbols::cloudSunRain, "Weather", Apps::SettingWeatherFormat},
           {Symbols::clock, "Chimes", Apps::SettingChimes},
-          
+
           {Symbols::sliders, "Chime strength", Apps::SettingChimeVibration},
           {Symbols::sliders, "Notif. str.", Apps::SettingNotifVibration},
           {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
