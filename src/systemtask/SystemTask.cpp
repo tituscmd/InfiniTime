@@ -183,28 +183,11 @@ void SystemTask::Work() {
   measureBatteryTimer = xTimerCreate("measureBattery", batteryMeasurementPeriod, pdTRUE, this, MeasureBatteryTimerCallback);
   xTimerStart(measureBatteryTimer, portMAX_DELAY);
 
-  constexpr TickType_t stateUpdatePeriod = pdMS_TO_TICKS(100);
-  // Stores when the state (motion, watchdog, time persistence etc) was last updated
-  // If there are many events being received by the message queue, this prevents
-  // having to update motion etc after every single event, which is bad
-  // for efficiency and for motion wake algorithms which expect motion readings
-  // to be 100ms apart
-  TickType_t lastStateUpdate = xTaskGetTickCount() - stateUpdatePeriod; // Force immediate run
-  TickType_t elapsed;
-
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
   while (true) {
     Messages msg;
-
-    elapsed = xTaskGetTickCount() - lastStateUpdate;
-    TickType_t waitTime;
-    if (elapsed >= stateUpdatePeriod) {
-      waitTime = 0;
-    } else {
-      waitTime = stateUpdatePeriod - elapsed;
-    }
-    if (xQueueReceive(systemTasksMsgQueue, &msg, waitTime) == pdTRUE) {
+    if (xQueueReceive(systemTasksMsgQueue, &msg, 100) == pdTRUE) {
       switch (msg) {
         case Messages::EnableSleeping:
           wakeLocksHeld--;
@@ -347,9 +330,7 @@ void SystemTask::Work() {
           }
           break;
         case Messages::OnNewDay:
-          // We might be sleeping (with TWI device disabled.
-          // Remember we'll have to reset the counter next time we're awake
-          stepCounterMustBeReset = true;
+          motionSensor.ResetStepCounter();
           break;
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
@@ -388,32 +369,27 @@ void SystemTask::Work() {
             nimbleController.DisableRadio();
           }
           break;
-        case Messages::SleepTrackerUpdate:
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::SleepTrackerUpdate);
-          break;
         default:
           break;
       }
     }
-    elapsed = xTaskGetTickCount() - lastStateUpdate;
-    if (elapsed >= stateUpdatePeriod) {
-      UpdateMotion();
-      if (isBleDiscoveryTimerRunning) {
-        if (bleDiscoveryTimer == 0) {
-          isBleDiscoveryTimerRunning = false;
-          // Services discovery is deferred from 3 seconds to avoid the conflicts between the host communicating with the
-          // target and vice-versa. I'm not sure if this is the right way to handle this...
-          nimbleController.StartDiscovery();
-        } else {
-          bleDiscoveryTimer--;
-        }
+
+    UpdateMotion();
+    if (isBleDiscoveryTimerRunning) {
+      if (bleDiscoveryTimer == 0) {
+        isBleDiscoveryTimerRunning = false;
+        // Services discovery is deferred from 3 seconds to avoid the conflicts between the host communicating with the
+        // target and vice-versa. I'm not sure if this is the right way to handle this...
+        nimbleController.StartDiscovery();
+      } else {
+        bleDiscoveryTimer--;
       }
-      monitor.Process();
-      NoInit_BackUpTime = dateTimeController.CurrentDateTime();
-      if (nrf_gpio_pin_read(PinMap::Button) == 0) {
-        watchdog.Reload();
-      }
-      lastStateUpdate = xTaskGetTickCount();
+    }
+
+    monitor.Process();
+    NoInit_BackUpTime = dateTimeController.CurrentDateTime();
+    if (nrf_gpio_pin_read(PinMap::Button) == 0) {
+      watchdog.Reload();
     }
   }
 #pragma clang diagnostic pop
@@ -466,18 +442,8 @@ void SystemTask::GoToSleep() {
 };
 
 void SystemTask::UpdateMotion() {
-  // Only consider disabling motion updates specifically in the Sleeping state
-  // AOD needs motion on to show up to date step counts
-  if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) ||
-                                              motionController.GetService()->IsMotionNotificationSubscribed())) {
-    return;
-  }
-
-  if (stepCounterMustBeReset) {
-    motionSensor.ResetStepCounter();
-    stepCounterMustBeReset = false;
-  }
+  // Unconditionally update motion
+  // Reading steps/motion characteristics must return up to date information even when not subscribed to notifications
 
   auto motionValues = motionSensor.Process();
 
@@ -487,7 +453,7 @@ void SystemTask::UpdateMotion() {
     if ((settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&
          motionController.ShouldRaiseWake()) ||
         (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) &&
-         motionController.ShouldShakeWake(settingsController.GetShakeThreshold()))) {
+         motionController.CurrentShakeSpeed() > settingsController.GetShakeThreshold())) {
       GoToRunning();
     }
   }
