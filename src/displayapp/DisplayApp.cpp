@@ -33,7 +33,6 @@
 #include "displayapp/screens/Calculator.h"
 #include "displayapp/screens/Sleep.h"
 
-
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 #include "drivers/Watchdog.h"
@@ -154,14 +153,14 @@ void DisplayApp::Start(System::BootErrors error) {
 void DisplayApp::Process(void* instance) {
   auto* app = static_cast<DisplayApp*>(instance);
   NRF_LOG_INFO("displayapp task started!");
-  app->InitHw();
+  app->Init();
 
   while (true) {
     app->Refresh();
   }
 }
 
-void DisplayApp::InitHw() {
+void DisplayApp::Init() {
   brightnessController.Init();
   ApplyBrightness();
   lcd.Init();
@@ -388,7 +387,7 @@ void DisplayApp::Refresh() {
         } else {
           LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Up);
         }
-        motorController.RunForDuration(static_cast<uint8_t>(settingsController.GetNotifVibration()));
+        motorController.RunForDuration(35);
         break;
       case Messages::AlarmTriggered:
         if (currentApp == Apps::Alarm) {
@@ -565,8 +564,8 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
   switch (app) {
     case Apps::Launcher: {
       std::array<Screens::Tile::Applications, UserAppTypes::Count> apps;
-      std::ranges::transform(userApps, apps.begin(), [](const auto& userApp) {
-        return Screens::Tile::Applications {userApp.icon, userApp.app, true};
+      std::ranges::transform(userApps, apps.begin(), [this](const auto& userApp) {
+        return Screens::Tile::Applications {userApp.icon, userApp.app, userApp.isAvailable(controllers.filesystem)};
       });
       currentScreen = std::make_unique<Screens::ApplicationList>(this,
                                                                  settingsController,
