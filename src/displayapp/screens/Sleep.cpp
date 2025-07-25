@@ -249,7 +249,10 @@ void Sleep::DrawInfoScreen() {
                           infiniSleepController.GetCurrentMinute());
   }
   lv_obj_align(lblTime, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 5);
-  lv_obj_set_style_local_text_color(lblTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_text_color(lblTime,
+                                      LV_LABEL_PART_MAIN,
+                                      LV_STATE_DEFAULT,
+                                      infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
 
   // Total sleep time
   label_total_sleep = lv_label_create(lv_scr_act(), nullptr);
@@ -263,11 +266,12 @@ void Sleep::DrawInfoScreen() {
   lv_obj_align(label_sleep, lv_scr_act(), LV_ALIGN_CENTER, 0, -60);
   */
 
-  lv_label_set_text_fmt(label_total_sleep,
-                        //"%d#c0c0c0 h#%d#c0c0c0 m# / %d#c0c0c0 h#%d#c0c0c0 m#",
-                        "%dh%dm / %dh%dm",
-                        totalMinutes / 60, totalMinutes % 60,
-                        (desiredCycles * 90) / 60, (desiredCycles * 90) % 60);
+  if(((desiredCycles * 90) % 60) == 0) {
+    lv_label_set_text_fmt(label_total_sleep, "%dh%02dm / %dh", totalMinutes / 60, totalMinutes % 60, (desiredCycles * 90) / 60);
+  } else {
+    lv_label_set_text_fmt(label_total_sleep, "%dh%02dm / %dh%02dm", totalMinutes / 60, totalMinutes % 60, (desiredCycles * 90) / 60, (desiredCycles * 90) % 60);
+  }
+
   lv_obj_align(label_total_sleep, nullptr, LV_ALIGN_CENTER, 0, -60);
   lv_obj_set_style_local_text_color(label_total_sleep,
                                     LV_LABEL_PART_MAIN,
