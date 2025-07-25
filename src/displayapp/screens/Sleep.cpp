@@ -298,10 +298,13 @@ void Sleep::DrawInfoScreen() {
   lv_obj_set_style_local_bg_color(sleepBar, LV_BAR_PART_BG, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_set_style_local_bg_opa(sleepBar, LV_BAR_PART_BG, LV_STATE_DEFAULT, LV_OPA_100);
   lv_obj_set_style_local_radius(sleepBar, LV_BAR_PART_BG, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_bar_set_range(sleepBar, 0, 450);
+
+  int desiredSleepMinutes = (desiredCycles * 90);
 
   int totalSleepMinutes = (infiniSleepController.GetSleepCycles() / 100) * 60 +
                           (infiniSleepController.GetSleepCycles() % 100);
+
+  lv_bar_set_range(sleepBar, 0, desiredSleepMinutes);
   lv_bar_set_value(sleepBar, totalSleepMinutes, LV_ANIM_OFF);
 
   lv_obj_set_style_local_bg_color(sleepBar,
