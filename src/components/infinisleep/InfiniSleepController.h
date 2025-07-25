@@ -157,6 +157,10 @@ namespace Pinetime {
         return sleepMinutes;
       }
 
+      uint16_t GetDesiredCycles() const {
+        return infiniSleepSettings.desiredCycles;
+      }
+
       uint16_t GetSuggestedSleepTime() const {
         return infiniSleepSettings.desiredCycles * infiniSleepSettings.sleepCycleDuration;
       }
