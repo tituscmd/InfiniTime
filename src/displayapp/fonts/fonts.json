@@ -8,6 +8,10 @@
          {
             "file": "FontAwesome6-Solid.ttf",
             "range": "0xF55A, 0xF001"
+         },
+         {
+            "file": "FontAwesome6-Brands.ttf",
+            "range": "0xf294"
          }
       ],
       "bpp": 1,
