@@ -131,7 +131,7 @@ namespace Pinetime {
       WakeAlarmSettings wakeAlarm;
 
       // Dertermine the steps for the gradual wake alarm, the corresponding vibration durations determine the power of the vibration
-      static constexpr uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600}; // In seconds
+      static constexpr uint16_t gradualWakeSteps[9] = {30, 42, 60, 85, 120, 170, 240, 350, 600}; // In seconds
 
       uint8_t gradualWakeStep = 9; // used to keep track of which step to use, in position form not idex
 
