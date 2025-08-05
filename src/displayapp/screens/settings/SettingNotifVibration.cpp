@@ -45,8 +45,10 @@ namespace {
   }
 }
 
-SettingNotifVibration::SettingNotifVibration(Pinetime::Controllers::Settings& settingsController,
-                                             Pinetime::Controllers::MotorController& motorController)
+SettingNotifVibration::SettingNotifVibration(
+  Pinetime::Controllers::Settings& settingsController,
+  Pinetime::Controllers::MotorController& motorController
+)
   : checkboxList(
       0,
       1,
