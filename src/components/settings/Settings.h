@@ -35,6 +35,7 @@ namespace Pinetime {
         Orange,
         Pink
       };
+      enum class VibrationStrength : uint8_t { Weak = 15, Normal = 35, Strong = 75 };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
       enum class PrideFlag : uint8_t { Gay, Trans, Bi, Lesbian };
@@ -334,6 +335,28 @@ namespace Pinetime {
         settings.heartRateBackgroundMeasurement = newIntervalInSeconds;
       }
 
+      void SetNotifVibration(VibrationStrength strength) {
+        if (strength != settings.notifVibration) {
+          settingsChanged = true;
+        }
+        settings.notifVibration = strength;
+      };
+
+      VibrationStrength GetNotifVibration() const {
+        return settings.notifVibration;
+      }
+
+      void SetChimeVibration(VibrationStrength strength) {
+        if (strength != settings.chimeVibration) {
+          settingsChanged = true;
+        }
+        settings.chimeVibration = strength;
+      };
+
+      VibrationStrength GetChimeVibration() const {
+        return settings.chimeVibration;
+      }
+
     private:
       Pinetime::Controllers::FS& fs;
 
@@ -365,6 +388,9 @@ namespace Pinetime {
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
 
         std::optional<uint16_t> heartRateBackgroundMeasurement;
+
+	VibrationStrength notifVibration = VibrationStrength::Normal;
+        VibrationStrength chimeVibration = VibrationStrength::Normal;
       };
 
       SettingsData settings;

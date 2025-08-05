@@ -44,13 +44,13 @@ namespace Pinetime {
 
           {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
           {Symbols::clock, "Chimes", Apps::SettingChimes},
+          {Symbols::tachometer, "Notif. str.", Apps::SettingNotifVibration},
+          {Symbols::tachometer, "Chime strength", Apps::SettingChimeVibration},
+          
           {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
           {Symbols::check, "Firmware", Apps::FirmwareValidation},
-
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
           {Symbols::list, "About", Apps::SysInfo},
-          {Symbols::none, "None", Apps::None},
-          {Symbols::none, "None", Apps::None},
         }};
         ScreenList<nScreens> screens;
       };

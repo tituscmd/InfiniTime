@@ -52,6 +52,8 @@
 #include "displayapp/screens/settings/SettingHeartRate.h"
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingBluetooth.h"
+#include "displayapp/screens/settings/SettingNotifVibration.h"
+#include "displayapp/screens/settings/SettingChimeVibration.h"
 
 #include "libs/lv_conf.h"
 #include "UserApps.h"
@@ -384,7 +386,7 @@ void DisplayApp::Refresh() {
         } else {
           LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Up);
         }
-        motorController.RunForDuration(35);
+        motorController.RunForDuration(static_cast<uint8_t>(settingsController.GetNotifVibration()));
         break;
       case Messages::AlarmTriggered:
         if (currentApp == Apps::Alarm) {
@@ -427,7 +429,7 @@ void DisplayApp::Refresh() {
         break;
       case Messages::ShowPairingKey:
         LoadNewScreen(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
-        motorController.RunForDuration(35);
+        motorController.RunForDuration(static_cast<uint8_t>(settingsController.GetNotifVibration()));
         break;
       case Messages::TouchEvent: {
         if (state != States::Running) {
@@ -516,7 +518,7 @@ void DisplayApp::Refresh() {
         break;
       case Messages::Chime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
-        motorController.RunForDuration(35);
+        motorController.RunForDuration(static_cast<uint8_t>(settingsController.GetChimeVibration()));
         break;
     }
   }
@@ -602,6 +604,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                systemTask->nimble().alertService(),
                                                                systemTask->nimble().ancs(),
                                                                motorController,
+                                                               settingsController,
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Normal);
       break;
@@ -611,6 +614,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                systemTask->nimble().alertService(),
                                                                systemTask->nimble().ancs(),
                                                                motorController,
+                                                               settingsController,
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Preview);
       break;
@@ -665,6 +669,12 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       break;
     case Apps::SettingBluetooth:
       currentScreen = std::make_unique<Screens::SettingBluetooth>(this, settingsController);
+      break;
+    case Apps::SettingNotifVibration:
+      currentScreen = std::make_unique<Screens::SettingNotifVibration>(settingsController, motorController);
+      break;
+    case Apps::SettingChimeVibration:
+      currentScreen = std::make_unique<Screens::SettingChimeVibration>(settingsController, motorController);
       break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(batteryController);
