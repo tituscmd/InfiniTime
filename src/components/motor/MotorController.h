@@ -32,9 +32,12 @@ namespace Pinetime {
       static void WakeAlarmRing(TimerHandle_t xTimer);
       static void NaturalWakeAlarmRing(TimerHandle_t xTimer);
       static void StopMotor(TimerHandle_t xTimer);
+      static void SecondBuzzCallback(TimerHandle_t xTimer);
+      static void OnShortVibTimer(TimerHandle_t xTimer);
 
       TimerHandle_t shortVib;
       TimerHandle_t longVib;
+      TimerHandle_t secondBuzzTimer;
 
       TimerHandle_t wakeAlarmVib;
       TimerHandle_t naturalWakeAlarmVib;
