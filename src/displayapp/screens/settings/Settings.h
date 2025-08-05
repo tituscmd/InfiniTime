@@ -32,13 +32,13 @@ namespace Pinetime {
         static constexpr int nScreens = 4;
 
         static constexpr std::array<List::Applications, entriesPerScreen * nScreens> entries {{
+          {Symbols::heartBeat, "Heartrate", Apps::SettingHeartRate},
+          {Symbols::home, "Watch face", Apps::SettingWatchFace},
           {Symbols::sun, "Display", Apps::SettingDisplay},
           {Symbols::eye, "Wake Up", Apps::SettingWakeUp},
+          
           {Symbols::clock, "Time format", Apps::SettingTimeFormat},
-          {Symbols::home, "Watch face", Apps::SettingWatchFace},
-
           {Symbols::shoe, "Steps", Apps::SettingSteps},
-          {Symbols::heartBeat, "Heartrate", Apps::SettingHeartRate},
           {Symbols::clock, "Date & Time", Apps::SettingSetDateTime},
           {Symbols::cloudSunRain, "Weather", Apps::SettingWeatherFormat},
 
