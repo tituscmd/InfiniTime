@@ -45,8 +45,6 @@ namespace Pinetime {
       static constexpr uint8_t maxSubtitleSize {15};
       static constexpr uint8_t maxMessageSize {120};
 
-      // The Apple Notification Center Service UUID are from https://developer.apple.com/library/archive/documentation/CoreBluetooth/Reference/AppleNotificationCenterServiceSpecification/Specification/Specification.html
-
       // 7905F431-B5CE-4E99-A40F-4B1E122D00D0
       static constexpr ble_uuid128_t ancsUuid {
         .u {.type = BLE_UUID_TYPE_128},
@@ -54,20 +52,20 @@ namespace Pinetime {
 
     private:
       // 9FBF120D-6301-42D9-8C58-25E699A21DBD
-      static constexpr ble_uuid128_t notificationSourceChar {
+      const ble_uuid128_t notificationSourceChar {
         .u {.type = BLE_UUID_TYPE_128},
         .value = {0xBD, 0x1D, 0xA2, 0x99, 0xE6, 0x25, 0x58, 0x8C, 0xD9, 0x42, 0x01, 0x63, 0x0D, 0x12, 0xBF, 0x9F}};
       // 69D1D8F3-45E1-49A8-9821-9BBDFDAAD9D9
-      static constexpr ble_uuid128_t controlPointChar {
+      const ble_uuid128_t controlPointChar {
         .u {.type = BLE_UUID_TYPE_128},
         .value = {0xD9, 0xD9, 0xAA, 0xFD, 0xBD, 0x9B, 0x21, 0x98, 0xA8, 0x49, 0xE1, 0x45, 0xF3, 0xD8, 0xD1, 0x69}};
       // 22EAC6E9-24D6-4BB5-BE44-B36ACE7C7BFB
-      static constexpr ble_uuid128_t dataSourceChar {
+      const ble_uuid128_t dataSourceChar {
         .u {.type = BLE_UUID_TYPE_128},
         .value = {0xFB, 0x7B, 0x7C, 0xCE, 0x6A, 0xB3, 0x44, 0xBE, 0xB5, 0x4B, 0xD6, 0x24, 0xE9, 0xC6, 0xEA, 0x22}};
 
-      static constexpr ble_uuid16_t gattServiceUuid = {BLE_UUID_TYPE_16, 0x1801};
-      static constexpr ble_uuid16_t serviceChangedCharUuid = {BLE_UUID_TYPE_16, 0x2A05};
+      const ble_uuid16_t gattServiceUuid = {BLE_UUID_TYPE_16, 0x1801};
+      const ble_uuid16_t serviceChangedCharUuid = {BLE_UUID_TYPE_16, 0x2A05};
 
       enum class Categories : uint8_t {
         Other = 0,
@@ -94,15 +92,14 @@ namespace Pinetime {
         NegativeAction = (1 << 4)
       };
 
-      struct AncsNotification {
+      struct AncsNotitfication {
         uint8_t eventId {0};
         uint8_t eventFlags {0};
         uint8_t category {0};
         uint32_t uuid {0};
-        bool isProcessed {false};
       };
 
-      std::unordered_map<uint32_t, AncsNotification> notifications;
+      std::unordered_map<uint32_t, AncsNotitfication> notifications;
 
       std::string DecodeUtf8String(os_mbuf* om, uint16_t size, uint16_t offset);
 
