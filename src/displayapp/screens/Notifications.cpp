@@ -42,7 +42,7 @@ Notifications::Notifications(DisplayApp* app,
   if (mode == Modes::Preview) {
     wakeLock.Lock();
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
-      motorController.StartRinging();
+      motorController.NotifBuzz();
     } else {
       motorController.RunForDuration(35);
     }
@@ -64,7 +64,7 @@ Notifications::Notifications(DisplayApp* app,
 Notifications::~Notifications() {
   lv_task_del(taskRefresh);
   // make sure we stop any vibrations before exiting
-  motorController.StopRinging();
+  // motorController.StopRinging();
   lv_obj_clean(lv_scr_act());
 }
 
