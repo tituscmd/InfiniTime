@@ -9,61 +9,101 @@ void MotorController::Init() {
   nrf_gpio_cfg_output(PinMap::Motor);
   nrf_gpio_pin_set(PinMap::Motor);
 
-  alarmVib = xTimerCreate("alarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, AlarmRing);
-  callVib = xTimerCreate("callVib", pdMS_TO_TICKS(1000), pdTRUE, this, CallRing);
-  timerVib = xTimerCreate("timerVib", pdMS_TO_TICKS(1000), pdTRUE, this, TimerRing);
-  chimeVib = xTimerCreate("chimeVib", 1, pdFALSE, nullptr, StopMotor);
   notifVib = xTimerCreate("notifVib", 1, pdFALSE, nullptr, StopMotor);
+  alarmVib = xTimerCreate("alarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, AlarmRing1);
+  alarmVib2 = xTimerCreate("alarmVib2", pdMS_TO_TICKS(100), pdFALSE, this, AlarmRing2);
+  alarmVib3 = xTimerCreate("alarmVib3", pdMS_TO_TICKS(100), pdFALSE, this, AlarmRing3);
+  callVib = xTimerCreate("callVib", pdMS_TO_TICKS(1000), pdTRUE, this, CallRing1);
+  callVib2 = xTimerCreate("callVib2", pdMS_TO_TICKS(150), pdFALSE, this, CallRing2);
+  timerVib = xTimerCreate("timerVib", pdMS_TO_TICKS(1000), pdTRUE, this, TimerRing1);
+  timerVib2 = xTimerCreate("timerVib2", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing2);
+  timerVib3 = xTimerCreate("timerVib3", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing3);
+  timerVib4 = xTimerCreate("timerVib4", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing4);
 }
 
-// 50ms buzz every 1 second
-void MotorController::AlarmRing(TimerHandle_t xTimer) {
+// 2x 25ms buzz + 75ms buzz every 1 second
+void MotorController::AlarmRing1(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(50);
+  motorController->RunForDuration(25);
+  xTimerStart(motorController->alarmVib2, 0);
+}
+
+void MotorController::AlarmRing2(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(25);
+  xTimerStart(motorController->alarmVib3, 0);
+}
+
+void MotorController::AlarmRing3(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(75);
 }
 
 // 50ms double buzz with 150ms gap, every 1 second
-void MotorController::CallRing(TimerHandle_t xTimer) {
+void MotorController::CallRing1(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(50);
+  xTimerStart(motorController->callVib2, 0);
+}
+
+void MotorController::CallRing2(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
   motorController->RunForDuration(50);
 }
 
-// 25ms triple buzz with 50ms gap, every 1 second
-void MotorController::TimerRing(TimerHandle_t xTimer) {
+// 25ms buzz + 10ms + 10ms + 10ms
+void MotorController::TimerRing1(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(50);
+  motorController->RunForDuration(25);
+  xTimerStart(motorController->timerVib2, 0);
 }
 
-// 25ms double buzz with 100ms gap
-void MotorController::ChimeBuzz(TimerHandle_t xTimer) {
+void MotorController::TimerRing2(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(50);
+  motorController->RunForDuration(10);
+  xTimerStart(motorController->timerVib3, 0);
 }
 
-// singe 50ms buzz
-void MotorController::NotifBuzz(TimerHandle_t xTimer) {
+void MotorController::TimerRing3(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(50);
+  motorController->RunForDuration(10);
+  xTimerStart(motorController->timerVib4, 0);
+}
+
+void MotorController::TimerRing4(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(10);
+}
+
+// single 25ms buzz
+void MotorController::NotifBuzz() {
+  RunForDuration(25);
 }
 
 // single buzz depending on motorDuration
 void MotorController::RunForDuration(uint8_t motorDuration) {
-  if (motorDuration > 0 && xTimerChangePeriod(shortVib, pdMS_TO_TICKS(motorDuration), 0) == pdPASS && xTimerStart(shortVib, 0) == pdPASS) {
+  if (motorDuration > 0 && xTimerChangePeriod(notifVib, pdMS_TO_TICKS(motorDuration), 0) == pdPASS && xTimerStart(notifVib, 0) == pdPASS) {
     nrf_gpio_pin_clear(PinMap::Motor);
   }
 }
 
-/*
-void MotorController::StartRinging() {
-  RunForDuration(50);
-  xTimerStart(longVib, 0);
+void MotorController::StartAlarmRing() {
+  xTimerStart(alarmVib, 0);
 }
 
-void MotorController::StopRinging() {
-  xTimerStop(longVib, 0);
+void MotorController::StopAlarmRing() {
+  xTimerStop(alarmVib, 0);
   nrf_gpio_pin_set(PinMap::Motor);
 }
-*/
+
+void MotorController::StartCallRing() {
+  xTimerStart(callVib, 0);
+}
+
+void MotorController::StopCallRing() {
+  xTimerStop(callVib, 0);
+  nrf_gpio_pin_set(PinMap::Motor);
+}
 
 void MotorController::StopMotor(TimerHandle_t /*xTimer*/) {
   nrf_gpio_pin_set(PinMap::Motor);

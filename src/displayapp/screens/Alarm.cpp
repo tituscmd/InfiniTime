@@ -209,13 +209,13 @@ void Alarm::SetAlerting() {
   minuteCounter.HideControls();
   lv_obj_set_hidden(btnStop, false);
   taskStopAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(60 * 1000), LV_TASK_PRIO_MID, this);
-  motorController.StartRinging();
+  motorController.StartAlarmRing();
   wakeLock.Lock();
 }
 
 void Alarm::StopAlerting() {
   alarmController.StopAlerting();
-  motorController.StopRinging();
+  motorController.StopAlarmRing();
   SetSwitchState(LV_ANIM_OFF);
   if (taskStopAlarm != nullptr) {
     lv_task_del(taskStopAlarm);

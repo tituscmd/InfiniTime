@@ -476,7 +476,7 @@ void DisplayApp::Refresh() {
         break;
       case Messages::Chime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
-        motorController.RunForDuration(35);
+        motorController.NotifBuzz(); // only temporary, working on a chime pattern
         break;
     }
   }
@@ -510,7 +510,7 @@ void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direc
 void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction) {
   lvgl.CancelTap();
   lv_disp_trig_activity(nullptr);
-  motorController.StopRinging();
+  // motorController.StopRinging();
 
   currentScreen.reset(nullptr);
   SetFullRefresh(direction);

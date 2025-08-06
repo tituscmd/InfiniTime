@@ -42,9 +42,9 @@ Notifications::Notifications(DisplayApp* app,
   if (mode == Modes::Preview) {
     wakeLock.Lock();
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
-      motorController.NotifBuzz();
+      motorController.StartCallRing();
     } else {
-      motorController.RunForDuration(35);
+      motorController.NotifBuzz();
     }
 
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
@@ -120,7 +120,7 @@ void Notifications::Refresh() {
 
 void Notifications::OnPreviewInteraction() {
   wakeLock.Release();
-  motorController.StopRinging();
+  // motorController.StopRinging();
   if (timeoutLine != nullptr) {
     lv_obj_del(timeoutLine);
     timeoutLine = nullptr;
@@ -356,7 +356,7 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
     return;
   }
 
-  motorController.StopRinging();
+  motorController.StopCallRing();
 
   if (obj == bt_accept) {
     alertNotificationService.AcceptIncomingCall();
