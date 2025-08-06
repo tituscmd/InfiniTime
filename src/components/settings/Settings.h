@@ -35,7 +35,7 @@ namespace Pinetime {
         Orange,
         Pink
       };
-      enum class VibrationStrength : uint8_t { Weak = 15, Normal = 35, Strong = 75 };
+      enum class VibrationStrength : uint8_t { Weak = 25, Normal = 35, Strong = 75 };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
       enum class PrideFlag : uint8_t { Gay, Trans, Bi, Lesbian };
