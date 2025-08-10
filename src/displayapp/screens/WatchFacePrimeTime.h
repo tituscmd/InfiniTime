@@ -39,6 +39,7 @@ namespace Pinetime {
                          Controllers::MotionController& motionController,
                          Controllers::SimpleWeatherService& weather,
                          Controllers::MusicService& music,
+                         Controllers::Timer& timer,
                          Controllers::FS& filesystem);
         ~WatchFacePrimeTime() override;
 
@@ -66,11 +67,11 @@ namespace Pinetime {
         lv_obj_t* notificationIcon;
         lv_obj_t* weatherIcon;
         lv_obj_t* temperature;
-        lv_obj_t* label_music;
+        lv_obj_t* labelActivityBar;
         lv_obj_t* icon_music;
         lv_obj_t* weatherLabel;
         lv_obj_t* label_battery_value;
-        
+
         std::string track;
 
         Controllers::DateTime& dateTimeController;
@@ -80,6 +81,7 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
         Controllers::SimpleWeatherService& weatherService;
         Controllers::MusicService& musicService;
+        Controllers::Timer& timer;
 
         lv_font_t* fontPrimeTime = nullptr;
 
@@ -104,6 +106,7 @@ namespace Pinetime {
                                              controllers.motionController,
                                              *controllers.weatherController,
                                              *controllers.musicService,
+                                             controllers.timer,
                                              controllers.filesystem);
       };
 

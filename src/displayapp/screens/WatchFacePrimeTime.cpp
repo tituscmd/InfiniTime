@@ -15,6 +15,7 @@
 #include "components/settings/Settings.h"
 #include "displayapp/InfiniTimeTheme.h"
 #include "components/ble/MusicService.h"
+#include "components/timer/Timer.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -28,6 +29,7 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
                                    Controllers::MotionController& motionController,
                                    Controllers::SimpleWeatherService& weatherService,
                                    Controllers::MusicService& music,
+                                   Controllers::Timer& timer,
                                    Controllers::FS& filesystem)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -37,6 +39,7 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
     motionController {motionController},
     weatherService {weatherService},
     musicService (music),
+    timer {timer},
     statusIcons(batteryController, bleController, alarmController) {
 
   lfs_file f = {};
@@ -48,9 +51,10 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
   statusIcons.Create();
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF3B30));
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+  lv_obj_set_style_local_text_font(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 
   weatherIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
@@ -68,13 +72,13 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 50);
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
-  label_music = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(label_music, "%s Not Playing", Symbols::music);
-  lv_obj_set_style_local_text_color(label_music, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_label_set_long_mode(label_music, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_set_width(label_music, LV_HOR_RES - 12);
-  lv_label_set_align(label_music, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label_music, lv_scr_act(), LV_ALIGN_CENTER, 0, 78);
+  labelActivityBar = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_fmt(labelActivityBar, "%s Not Playing", Symbols::music);
+  lv_obj_set_style_local_text_color(labelActivityBar, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_label_set_long_mode(labelActivityBar, LV_LABEL_LONG_SROLL_CIRC);
+  lv_obj_set_width(labelActivityBar, LV_HOR_RES - 12);
+  lv_label_set_align(labelActivityBar, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(labelActivityBar, lv_scr_act(), LV_ALIGN_CENTER, 0, 78);
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, fontPrimeTime);
@@ -233,11 +237,21 @@ void WatchFacePrimeTime::Refresh() {
     lv_obj_realign(temperature);
     lv_obj_realign(weatherIcon);
   }
-  
-  if (track != musicService.getTrack()) {
+
+  // activity bar
+  if (timer.GetTimeRemaining() > std::chrono::milliseconds(0)) {
+    std::chrono::seconds secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
+    uint8_t timerMinutes = (secondsRemaining.count() % 3600) / 60;
+    uint8_t timerSeconds = secondsRemaining.count() % 60;
+    lv_label_set_text_fmt(labelActivityBar, "%s %d:%02d", Symbols::hourGlass, timerMinutes, timerSeconds);
+    lv_obj_realign(labelActivityBar);
+  } else if (musicService.isPlaying()) {
     track = musicService.getTrack();
-    lv_label_set_text_fmt(label_music, "%s %s", Symbols::music, track.data());
-    lv_obj_realign(label_music);
+    lv_label_set_text_fmt(labelActivityBar, "%s %s", Symbols::music, track.data());
+    lv_obj_realign(labelActivityBar);
+  } else {
+    lv_label_set_text_fmt(labelActivityBar, "%s Waiting...", Symbols::coffee);
+    lv_obj_realign(labelActivityBar);
   }
 }
 
