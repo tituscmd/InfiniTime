@@ -37,12 +37,12 @@ void MotorController::Init() {
 
   // Initialize timers for motor actions
   notifVib = xTimerCreate("notifVib", 1, pdFALSE, nullptr, StopMotor);
-  alarmVib = xTimerCreate("alarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, AlarmRing1);
+  alarmVib1 = xTimerCreate("alarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, AlarmRing1);
   alarmVib2 = xTimerCreate("alarmVib2", pdMS_TO_TICKS(100), pdFALSE, this, AlarmRing2);
   alarmVib3 = xTimerCreate("alarmVib3", pdMS_TO_TICKS(100), pdFALSE, this, AlarmRing3);
-  callVib = xTimerCreate("callVib", pdMS_TO_TICKS(1000), pdTRUE, this, CallRing1);
+  callVib1 = xTimerCreate("callVib", pdMS_TO_TICKS(1000), pdTRUE, this, CallRing1);
   callVib2 = xTimerCreate("callVib2", pdMS_TO_TICKS(150), pdFALSE, this, CallRing2);
-  timerVib = xTimerCreate("timerVib", pdMS_TO_TICKS(1000), pdTRUE, this, TimerRing1);
+  timerVib1 = xTimerCreate("timerVib", pdMS_TO_TICKS(1000), pdTRUE, this, TimerRing1);
   timerVib2 = xTimerCreate("timerVib2", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing2);
   timerVib3 = xTimerCreate("timerVib3", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing3);
   timerVib4 = xTimerCreate("timerVib4", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing4);
@@ -50,6 +50,8 @@ void MotorController::Init() {
   chimeVib2 = xTimerCreate("chimeVib2", pdMS_TO_TICKS(100), pdFALSE, this, ChimeRing2);
   wakeAlarmVib = xTimerCreate("wakeAlarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, WakeAlarmRing);
   naturalWakeAlarmVib = xTimerCreate("natWakeVib", pdMS_TO_TICKS(30 * 1000), pdTRUE, this, NaturalWakeAlarmRing);
+  chimeVib1 = xTimerCreate("chimeVib1", 1, pdFALSE, this, ChimeRing1);
+  chimeVib2 = xTimerCreate("chimeVib2", pdMS_TO_TICKS(100), pdFALSE, this, ChimeRing2);
 }
 
 void MotorController::SetMotorStrength(uint8_t strength) {
@@ -124,19 +126,19 @@ void MotorController::StopNaturalWakeAlarm() {
 // 2x 25ms buzz + 75ms buzz every 1 second
 void MotorController::AlarmRing1(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(25);
+  motorController->RunForDuration(15);
   xTimerStart(motorController->alarmVib2, 0);
 }
 
 void MotorController::AlarmRing2(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(25);
+  motorController->RunForDuration(15);
   xTimerStart(motorController->alarmVib3, 0);
 }
 
 void MotorController::AlarmRing3(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(75);
+  motorController->RunForDuration(35);
 }
 
 // 50ms double buzz with 150ms gap, every 1 second
@@ -203,20 +205,20 @@ void MotorController::RunForDuration(uint16_t motorDuration) {
 
 // public starting methods
 void MotorController::StartAlarmRing() {
-  xTimerStart(alarmVib, 0);
+  xTimerStart(alarmVib1, 0);
 }
 
 void MotorController::StopAlarmRing() {
-  xTimerStop(alarmVib, 0);
+  xTimerStop(alarmVib1, 0);
   nrf_gpio_pin_set(PinMap::Motor);
 }
 
 void MotorController::StartCallRing() {
-  xTimerStart(callVib, 0);
+  xTimerStart(callVib1, 0);
 }
 
 void MotorController::StopCallRing() {
-  xTimerStop(callVib, 0);
+  xTimerStop(callVib1, 0);
   nrf_gpio_pin_set(PinMap::Motor);
 }
 
@@ -224,7 +226,20 @@ void MotorController::StartChimeRing() {
   xTimerStart(chimeVib1, 0);
 }
 
-// stopping motor
+void MotorController::StartTimerRing() {
+  xTimerStart(timerVib1, 0);
+}
+
+void MotorController::StopTimerRing() {
+  xTimerStop(timerVib1, 0);
+  nrf_gpio_pin_set(PinMap::Motor);
+}
+
+bool MotorController::IsRinging() {
+  return (xTimerIsTimerActive(timerVib1) == pdTRUE);
+}
+
+// just stops the motor
 void MotorController::StopMotor(TimerHandle_t /*xTimer*/) {
   nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_STOP); // Stop the PWM sequence
   pwmValue = 0;                                      // Reset the PWM value

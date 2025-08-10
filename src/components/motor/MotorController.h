@@ -18,10 +18,10 @@ namespace Pinetime {
       void StopAlarmRing();
       void StartCallRing();
       void StopCallRing();
-      void StartChimeRing();
-      void StopChimeRing();
       void StartTimerRing();
       void StopTimerRing();
+      void StartChimeRing();
+      bool IsRinging();
 
       void StartWakeAlarm();
       void StopWakeAlarm();
@@ -48,12 +48,12 @@ namespace Pinetime {
       static void TimerRing4(TimerHandle_t xTimer);
       static void ChimeRing1(TimerHandle_t xTimer);
       static void ChimeRing2(TimerHandle_t xTimer);
-      TimerHandle_t alarmVib;
+      TimerHandle_t alarmVib1;
       TimerHandle_t alarmVib2;
       TimerHandle_t alarmVib3;
-      TimerHandle_t callVib;
+      TimerHandle_t callVib1;
       TimerHandle_t callVib2;
-      TimerHandle_t timerVib;
+      TimerHandle_t timerVib1;
       TimerHandle_t timerVib2;
       TimerHandle_t timerVib3;
       TimerHandle_t timerVib4;
