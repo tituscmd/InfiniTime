@@ -26,19 +26,19 @@ void MotorController::Init() {
 // 2x 25ms buzz + 75ms buzz every 1 second
 void MotorController::AlarmRing1(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(25);
+  motorController->RunForDuration(15);
   xTimerStart(motorController->alarmVib2, 0);
 }
 
 void MotorController::AlarmRing2(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(25);
+  motorController->RunForDuration(15);
   xTimerStart(motorController->alarmVib3, 0);
 }
 
 void MotorController::AlarmRing3(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(75);
+  motorController->RunForDuration(35);
 }
 
 // 50ms double buzz with 150ms gap, every 1 second
