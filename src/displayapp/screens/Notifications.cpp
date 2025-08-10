@@ -16,7 +16,6 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::AppleNotificationCenterClient& ancsClient,
                              Pinetime::Controllers::MotorController& motorController,
-                             Pinetime::Controllers::Settings& settingsController,
                              System::SystemTask& systemTask,
                              Modes mode)
   : app {app},
@@ -48,9 +47,9 @@ Notifications::Notifications(DisplayApp* app,
   if (mode == Modes::Preview) {
     //wakeLock.Lock();
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
-      motorController.StartRinging();
+      motorController.StartCallRing();
     } else {
-      motorController.RunForDuration(static_cast<uint8_t>(settingsController.GetNotifVibration()));
+      motorController.NotifBuzz();
     }
 
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
@@ -70,7 +69,7 @@ Notifications::Notifications(DisplayApp* app,
 Notifications::~Notifications() {
   lv_task_del(taskRefresh);
   // make sure we stop any vibrations before exiting
-  motorController.StopRinging();
+  // motorController.StopRinging();
   lv_obj_clean(lv_scr_act());
 }
 
@@ -127,8 +126,8 @@ void Notifications::Refresh() {
 }
 
 void Notifications::OnPreviewInteraction() {
-  //wakeLock.Release();
-  motorController.StopRinging();
+  // wakeLock.Release();
+  // motorController.StopRinging();
   if (timeoutLine != nullptr) {
     lv_obj_del(timeoutLine);
     timeoutLine = nullptr;
@@ -379,7 +378,7 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
     return;
   }
 
-  motorController.StopRinging();
+  motorController.StopCallRing();
 
   if (obj == bt_accept) {
     alertNotificationService.AcceptIncomingCall();

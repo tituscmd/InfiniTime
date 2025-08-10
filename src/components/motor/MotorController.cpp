@@ -36,8 +36,18 @@ void MotorController::Init() {
   nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_SEQSTART0);
 
   // Initialize timers for motor actions
-  shortVib = xTimerCreate("shortVib", 1, pdFALSE, nullptr, StopMotor);
-  longVib = xTimerCreate("longVib", pdMS_TO_TICKS(1000), pdTRUE, this, Ring);
+  notifVib = xTimerCreate("notifVib", 1, pdFALSE, nullptr, StopMotor);
+  alarmVib = xTimerCreate("alarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, AlarmRing1);
+  alarmVib2 = xTimerCreate("alarmVib2", pdMS_TO_TICKS(100), pdFALSE, this, AlarmRing2);
+  alarmVib3 = xTimerCreate("alarmVib3", pdMS_TO_TICKS(100), pdFALSE, this, AlarmRing3);
+  callVib = xTimerCreate("callVib", pdMS_TO_TICKS(1000), pdTRUE, this, CallRing1);
+  callVib2 = xTimerCreate("callVib2", pdMS_TO_TICKS(150), pdFALSE, this, CallRing2);
+  timerVib = xTimerCreate("timerVib", pdMS_TO_TICKS(1000), pdTRUE, this, TimerRing1);
+  timerVib2 = xTimerCreate("timerVib2", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing2);
+  timerVib3 = xTimerCreate("timerVib3", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing3);
+  timerVib4 = xTimerCreate("timerVib4", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing4);
+  chimeVib1 = xTimerCreate("chimeVib1", 1, pdFALSE, this, ChimeRing1);
+  chimeVib2 = xTimerCreate("chimeVib2", pdMS_TO_TICKS(100), pdFALSE, this, ChimeRing2);
   wakeAlarmVib = xTimerCreate("wakeAlarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, WakeAlarmRing);
   naturalWakeAlarmVib = xTimerCreate("natWakeVib", pdMS_TO_TICKS(30 * 1000), pdTRUE, this, NaturalWakeAlarmRing);
 }
@@ -50,34 +60,6 @@ void MotorController::SetMotorStrength(uint8_t strength) {
   // Map the strength to the PWM value (0-100 -> 0-top_value)
   // pwmValue = (strength * 255) / 100;
   pwmValue = strength;
-}
-
-void MotorController::Ring(TimerHandle_t xTimer) {
-  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(50);
-}
-
-void MotorController::RunForDuration(uint16_t motorDuration) {
-  if (motorDuration > 0 && xTimerChangePeriod(shortVib, pdMS_TO_TICKS(motorDuration), 0) == pdPASS && xTimerStart(shortVib, 0) == pdPASS) {
-    if (pwmValue == 0) {
-      SetMotorStrength(255);
-    }
-    // nrf_gpio_pin_clear(PinMap::Motor);
-    nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_SEQSTART0); // Restart the PWM sequence with the updated value
-  }
-}
-
-void MotorController::StartRinging() {
-  SetMotorStrength(100);
-  RunForDuration(50);
-  xTimerStart(longVib, 0);
-}
-
-void MotorController::StopRinging() {
-  xTimerStop(longVib, 0);
-  nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_STOP); // Stop the PWM sequence
-  pwmValue = 0;                                      // Reset the PWM value
-  nrf_gpio_pin_set(PinMap::Motor);
 }
 
 void MotorController::StartWakeAlarm() {
@@ -139,12 +121,117 @@ void MotorController::StopNaturalWakeAlarm() {
   nrf_gpio_pin_set(PinMap::Motor);
 }
 
+// 2x 25ms buzz + 75ms buzz every 1 second
+void MotorController::AlarmRing1(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(25);
+  xTimerStart(motorController->alarmVib2, 0);
+}
+
+void MotorController::AlarmRing2(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(25);
+  xTimerStart(motorController->alarmVib3, 0);
+}
+
+void MotorController::AlarmRing3(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(75);
+}
+
+// 50ms double buzz with 150ms gap, every 1 second
+void MotorController::CallRing1(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(50);
+  xTimerStart(motorController->callVib2, 0);
+}
+
+void MotorController::CallRing2(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(50);
+}
+
+// 25ms buzz + 10ms + 10ms + 10ms
+void MotorController::TimerRing1(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(25);
+  xTimerStart(motorController->timerVib2, 0);
+}
+
+void MotorController::TimerRing2(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(10);
+  xTimerStart(motorController->timerVib3, 0);
+}
+
+void MotorController::TimerRing3(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(10);
+  xTimerStart(motorController->timerVib4, 0);
+}
+
+void MotorController::TimerRing4(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(10);
+}
+
+void MotorController::ChimeRing1(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(20);
+  xTimerStart(motorController->chimeVib2, 0);
+}
+
+void MotorController::ChimeRing2(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(20);
+}
+
+// single buzz, very nice on the wrist
+void MotorController::NotifBuzz() {
+  RunForDuration(30);
+}
+
+void MotorController::RunForDuration(uint16_t motorDuration) {
+  if (motorDuration > 0 && xTimerChangePeriod(notifVib, pdMS_TO_TICKS(motorDuration), 0) == pdPASS && xTimerStart(notifVib, 0) == pdPASS) {
+    if (pwmValue == 0) {
+      SetMotorStrength(255);
+    }
+    // nrf_gpio_pin_clear(PinMap::Motor);
+    nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_SEQSTART0); // Restart the PWM sequence with the updated value
+  }
+}
+
+// public starting methods
+void MotorController::StartAlarmRing() {
+  xTimerStart(alarmVib, 0);
+}
+
+void MotorController::StopAlarmRing() {
+  xTimerStop(alarmVib, 0);
+  nrf_gpio_pin_set(PinMap::Motor);
+}
+
+void MotorController::StartCallRing() {
+  xTimerStart(callVib, 0);
+}
+
+void MotorController::StopCallRing() {
+  xTimerStop(callVib, 0);
+  nrf_gpio_pin_set(PinMap::Motor);
+}
+
+void MotorController::StartChimeRing() {
+  xTimerStart(chimeVib1, 0);
+}
+
+// stopping motor
 void MotorController::StopMotor(TimerHandle_t /*xTimer*/) {
   nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_STOP); // Stop the PWM sequence
   pwmValue = 0;                                      // Reset the PWM value
   nrf_gpio_pin_set(PinMap::Motor);                   // Set the motor pin to the off state
 }
 
+// infinisleep stuff
 void MotorController::GradualWakeBuzz() {
   SetMotorStrength((60 * infiniSleepMotorStrength) / 100);
   RunForDuration(100);

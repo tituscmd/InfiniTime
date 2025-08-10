@@ -66,11 +66,6 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "ios": "cpp",
-        "disc.c": "cpp",
-        "disc_f_1.c": "cpp",
-        "span": "cpp",
-        "locale": "cpp",
-        "semaphore": "cpp"
+        "ios": "cpp"
     }
 }
