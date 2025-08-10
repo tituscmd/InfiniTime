@@ -10,12 +10,12 @@ void MotorController::Init() {
   nrf_gpio_pin_set(PinMap::Motor);
 
   notifVib = xTimerCreate("notifVib", 1, pdFALSE, nullptr, StopMotor);
-  alarmVib = xTimerCreate("alarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, AlarmRing1);
+  alarmVib1 = xTimerCreate("alarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, AlarmRing1);
   alarmVib2 = xTimerCreate("alarmVib2", pdMS_TO_TICKS(100), pdFALSE, this, AlarmRing2);
   alarmVib3 = xTimerCreate("alarmVib3", pdMS_TO_TICKS(100), pdFALSE, this, AlarmRing3);
-  callVib = xTimerCreate("callVib", pdMS_TO_TICKS(1000), pdTRUE, this, CallRing1);
+  callVib1 = xTimerCreate("callVib", pdMS_TO_TICKS(1000), pdTRUE, this, CallRing1);
   callVib2 = xTimerCreate("callVib2", pdMS_TO_TICKS(150), pdFALSE, this, CallRing2);
-  timerVib = xTimerCreate("timerVib", pdMS_TO_TICKS(1000), pdTRUE, this, TimerRing1);
+  timerVib1 = xTimerCreate("timerVib", pdMS_TO_TICKS(1000), pdTRUE, this, TimerRing1);
   timerVib2 = xTimerCreate("timerVib2", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing2);
   timerVib3 = xTimerCreate("timerVib3", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing3);
   timerVib4 = xTimerCreate("timerVib4", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing4);
@@ -101,25 +101,38 @@ void MotorController::RunForDuration(uint8_t motorDuration) {
 }
 
 void MotorController::StartAlarmRing() {
-  xTimerStart(alarmVib, 0);
+  xTimerStart(alarmVib1, 0);
 }
 
 void MotorController::StopAlarmRing() {
-  xTimerStop(alarmVib, 0);
+  xTimerStop(alarmVib1, 0);
   nrf_gpio_pin_set(PinMap::Motor);
 }
 
 void MotorController::StartCallRing() {
-  xTimerStart(callVib, 0);
+  xTimerStart(callVib1, 0);
 }
 
 void MotorController::StopCallRing() {
-  xTimerStop(callVib, 0);
+  xTimerStop(callVib1, 0);
   nrf_gpio_pin_set(PinMap::Motor);
 }
 
 void MotorController::StartChimeRing() {
   xTimerStart(chimeVib1, 0);
+}
+
+void MotorController::StartTimerRing() {
+  xTimerStart(timerVib1, 0);
+}
+
+void MotorController::StopTimerRing() {
+  xTimerStop(timerVib1, 0);
+  nrf_gpio_pin_set(PinMap::Motor);
+}
+
+bool MotorController::IsRinging() {
+  return (xTimerIsTimerActive(timerVib1) == pdTRUE);
 }
 
 void MotorController::StopMotor(TimerHandle_t /*xTimer*/) {
