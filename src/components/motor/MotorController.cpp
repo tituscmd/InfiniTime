@@ -19,6 +19,8 @@ void MotorController::Init() {
   timerVib2 = xTimerCreate("timerVib2", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing2);
   timerVib3 = xTimerCreate("timerVib3", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing3);
   timerVib4 = xTimerCreate("timerVib4", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing4);
+  chimeVib1 = xTimerCreate("chimeVib1", 1, pdFALSE, this, ChimeRing1);
+  chimeVib2 = xTimerCreate("chimeVib2", pdMS_TO_TICKS(100), pdFALSE, this, ChimeRing2);
 }
 
 // 2x 25ms buzz + 75ms buzz every 1 second
@@ -75,9 +77,20 @@ void MotorController::TimerRing4(TimerHandle_t xTimer) {
   motorController->RunForDuration(10);
 }
 
-// single 25ms buzz
+void MotorController::ChimeRing1(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(20);
+  xTimerStart(motorController->chimeVib2, 0);
+}
+
+void MotorController::ChimeRing2(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->RunForDuration(20);
+}
+
+// single buzz, very nice on the wrist
 void MotorController::NotifBuzz() {
-  RunForDuration(25);
+  RunForDuration(30);
 }
 
 // single buzz depending on motorDuration
@@ -103,6 +116,10 @@ void MotorController::StartCallRing() {
 void MotorController::StopCallRing() {
   xTimerStop(callVib, 0);
   nrf_gpio_pin_set(PinMap::Motor);
+}
+
+void MotorController::StartChimeRing() {
+  xTimerStart(chimeVib1, 0);
 }
 
 void MotorController::StopMotor(TimerHandle_t /*xTimer*/) {

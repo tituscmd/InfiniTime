@@ -20,6 +20,7 @@ namespace Pinetime {
       void NotifBuzz();
       void StartTimerRing();
       void StopTimerRing();
+      void StartChimeRing();
 
     private:
       static void StopMotor(TimerHandle_t xTimer);
@@ -32,6 +33,8 @@ namespace Pinetime {
       static void TimerRing2(TimerHandle_t xTimer);
       static void TimerRing3(TimerHandle_t xTimer);
       static void TimerRing4(TimerHandle_t xTimer);
+      static void ChimeRing1(TimerHandle_t xTimer);
+      static void ChimeRing2(TimerHandle_t xTimer);
       TimerHandle_t alarmVib;
       TimerHandle_t alarmVib2;
       TimerHandle_t alarmVib3;
@@ -41,6 +44,8 @@ namespace Pinetime {
       TimerHandle_t timerVib2;
       TimerHandle_t timerVib3;
       TimerHandle_t timerVib4;
+      TimerHandle_t chimeVib1;
+      TimerHandle_t chimeVib2;
       TimerHandle_t notifVib;
     };
   }
