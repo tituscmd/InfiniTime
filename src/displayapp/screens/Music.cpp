@@ -49,7 +49,12 @@ inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
  *
  * TODO: Investigate Apple Media Service and AVRCPv1.6 support for seamless integration
  */
-Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble& bleController): musicService(music), bleController {bleController}{
+Music::Music(Pinetime::Controllers::MusicService& music,
+             const Controllers::Ble& bleController,
+             Controllers::DateTime& dateTimeController)
+  : musicService(music), bleController {bleController},
+    dateTimeController {dateTimeController} {
+  
   lv_obj_t* label;
 
   lv_style_init(&btn_style);
@@ -115,7 +120,7 @@ Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble&
   lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SROLL_CIRC);
   lv_obj_align(txtArtist, nullptr, LV_ALIGN_IN_LEFT_MID, 0, (MIDDLE_OFFSET - 45) + 2 * FONT_HEIGHT + LINE_PAD);
   lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
-  lv_obj_set_width(txtArtist, LV_HOR_RES - 12);
+  lv_obj_set_width(txtArtist, LV_HOR_RES);
   lv_label_set_text_static(txtArtist, "");
   lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
@@ -123,7 +128,7 @@ Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble&
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
   lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 0, (MIDDLE_OFFSET - 45) + 1 * FONT_HEIGHT);
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
-  lv_obj_set_width(txtTrack, LV_HOR_RES - 12);
+  lv_obj_set_width(txtTrack, LV_HOR_RES);
   lv_label_set_text_static(txtTrack, "");
 
   barTrackDuration = lv_bar_create(lv_scr_act(), nullptr);
@@ -152,13 +157,6 @@ Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble&
   lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
   lv_obj_set_style_local_text_color(txtTrackDuration, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
-  bluetoothInfo = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(bluetoothInfo, "%s Disconnected", Screens::Symbols::bluetooth);
-  lv_obj_set_style_local_text_color(bluetoothInfo, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_obj_align(bluetoothInfo, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
-  lv_obj_set_auto_realign(bluetoothInfo, true);
-
-
   /* Init animation
   imgDisc = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_src_arr(imgDisc, &disc);
@@ -168,6 +166,12 @@ Music::Music(Pinetime::Controllers::MusicService& music, const Controllers::Ble&
   lv_img_set_src_arr(imgDiscAnim, &disc_f_1);
   lv_obj_align(imgDiscAnim, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0 - 32, 0);
   */
+
+  labelTime = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_align(labelTime, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(labelTime, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_set_auto_realign(labelTime, true);
+  lv_label_set_text_static(labelTime, "09:41");
 
   frameB = false;
 
@@ -211,13 +215,23 @@ void Music::Refresh() {
     UpdateLength();
   }
 
+  lv_label_set_text(labelTime, dateTimeController.FormattedTime().c_str());
+
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     if (bleState.Get() == false) {
-      lv_label_set_text_fmt(bluetoothInfo, "%s Disconnected", Screens::Symbols::bluetooth);
-    } else {
-    lv_label_set_text_fmt(bluetoothInfo, "%s Connected", Screens::Symbols::bluetooth);
+      UpdateLength();
+      lv_label_set_text_fmt(txtArtist, "Disconnected");
+      lv_label_set_text_fmt(txtTrack, "");
+      lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+      lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+      lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+    }
+    else {
+      lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+      lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+      lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
     }
   }
 
@@ -226,7 +240,8 @@ void Music::Refresh() {
     lv_obj_set_style_local_text_font(txtPlayPause, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
     if (xTaskGetTickCount() - 1024 >= lastIncrement) {
 
-      /*if (frameB) {
+      /*
+      if (frameB) {
         lv_img_set_src(imgDiscAnim, &disc_f_1);
       } else {
         lv_img_set_src(imgDiscAnim, &disc_f_2);
@@ -249,7 +264,8 @@ void Music::Refresh() {
 
 void Music::UpdateLength() {
   int remaining = totalLength - currentPosition;
-  if (remaining < 0) remaining = 0;
+  if (remaining < 0)
+    remaining = 0;
 
   if (totalLength > (99 * 60 * 60)) {
     lv_label_set_text_static(txtCurrentPosition, "Inf");
