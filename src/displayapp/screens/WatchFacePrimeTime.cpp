@@ -243,21 +243,18 @@ void WatchFacePrimeTime::Refresh() {
   // activity bar
   if (infiniSleepController.IsEnabled()) {
     lv_label_set_text_fmt(labelActivityBar, "%s Sleeping...", Symbols::bed);
-    lv_obj_realign(labelActivityBar);
   } else if (timer.IsRunning()) {
     std::chrono::seconds secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
     uint8_t timerMinutes = (secondsRemaining.count() % 3600) / 60;
     uint8_t timerSeconds = secondsRemaining.count() % 60;
     lv_label_set_text_fmt(labelActivityBar, "%s %d:%02d", Symbols::hourGlass, timerMinutes, timerSeconds);
-    lv_obj_realign(labelActivityBar);
   } else if (musicService.isPlaying()) {
     track = musicService.getTrack();
     lv_label_set_text_fmt(labelActivityBar, "%s %s", Symbols::music, track.data());
-    lv_obj_realign(labelActivityBar);
   } else {
     lv_label_set_text_fmt(labelActivityBar, "%s Waiting...", Symbols::coffee);
-    lv_obj_realign(labelActivityBar);
   }
+  lv_obj_realign(labelActivityBar);
 }
 
 bool WatchFacePrimeTime::IsAvailable(Pinetime::Controllers::FS& filesystem) {
