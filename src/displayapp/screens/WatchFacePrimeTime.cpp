@@ -30,6 +30,7 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
                                    Controllers::SimpleWeatherService& weatherService,
                                    Controllers::MusicService& music,
                                    Controllers::Timer& timer,
+                                   Controllers::InfiniSleepController& infiniSleepController,
                                    Controllers::FS& filesystem)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -40,6 +41,7 @@ WatchFacePrimeTime::WatchFacePrimeTime(Controllers::DateTime& dateTimeController
     weatherService {weatherService},
     musicService (music),
     timer {timer},
+    infiniSleepController {infiniSleepController},
     statusIcons(batteryController, bleController, alarmController) {
 
   lfs_file f = {};
@@ -239,14 +241,15 @@ void WatchFacePrimeTime::Refresh() {
   }
 
   // activity bar
-  if (timer.GetTimeRemaining() > std::chrono::milliseconds(0)) {
+  if (infiniSleepController.IsEnabled()) {
+    lv_label_set_text_fmt(labelActivityBar, "%s Good Night", Symbols::bed);
+    lv_obj_realign(labelActivityBar);
+  } else if (timer.IsRunning()) {
     std::chrono::seconds secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
     uint8_t timerMinutes = (secondsRemaining.count() % 3600) / 60;
     uint8_t timerSeconds = secondsRemaining.count() % 60;
     lv_label_set_text_fmt(labelActivityBar, "%s %d:%02d", Symbols::hourGlass, timerMinutes, timerSeconds);
     lv_obj_realign(labelActivityBar);
-  } else if (musicService.isPlaying()) {
-    track = musicService.getTrack();
     lv_label_set_text_fmt(labelActivityBar, "%s %s", Symbols::music, track.data());
     lv_obj_realign(labelActivityBar);
   } else {

@@ -40,6 +40,7 @@ namespace Pinetime {
                          Controllers::SimpleWeatherService& weather,
                          Controllers::MusicService& music,
                          Controllers::Timer& timer,
+                         Controllers::InfiniSleepController& infiniSleepController,
                          Controllers::FS& filesystem);
         ~WatchFacePrimeTime() override;
 
@@ -82,6 +83,7 @@ namespace Pinetime {
         Controllers::SimpleWeatherService& weatherService;
         Controllers::MusicService& musicService;
         Controllers::Timer& timer;
+        Controllers::InfiniSleepController& infiniSleepController;
 
         lv_font_t* fontPrimeTime = nullptr;
 
@@ -107,6 +109,7 @@ namespace Pinetime {
                                              *controllers.weatherController,
                                              *controllers.musicService,
                                              controllers.timer,
+                                             controllers.infiniSleepController,
                                              controllers.filesystem);
       };
 
