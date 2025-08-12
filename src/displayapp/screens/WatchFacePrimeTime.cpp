@@ -250,6 +250,8 @@ void WatchFacePrimeTime::Refresh() {
     uint8_t timerSeconds = secondsRemaining.count() % 60;
     lv_label_set_text_fmt(labelActivityBar, "%s %d:%02d", Symbols::hourGlass, timerMinutes, timerSeconds);
     lv_obj_realign(labelActivityBar);
+  } else if (musicService.isPlaying()) {
+    track = musicService.getTrack();
     lv_label_set_text_fmt(labelActivityBar, "%s %s", Symbols::music, track.data());
     lv_obj_realign(labelActivityBar);
   } else {
