@@ -242,7 +242,7 @@ void WatchFacePrimeTime::Refresh() {
 
   // activity bar
   if (infiniSleepController.IsEnabled()) {
-    lv_label_set_text_fmt(labelActivityBar, "%s Good Night", Symbols::bed);
+    lv_label_set_text_fmt(labelActivityBar, "%s Sleeping...", Symbols::bed);
     lv_obj_realign(labelActivityBar);
   } else if (timer.IsRunning()) {
     std::chrono::seconds secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
