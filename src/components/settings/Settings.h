@@ -66,7 +66,7 @@ namespace Pinetime {
         FifteenSeconds,
         ThirtySeconds,
         OneMinute,
-        FiveMinutes,
+        TwoMinutes,
         TenMinutes,
         ThirtyMinutes
       };

@@ -42,12 +42,14 @@ Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
              Controllers::Settings::ClockType clockType,
              System::SystemTask& systemTask,
              Controllers::MotorController& motorController,
-             DisplayApp& displayApp)
+             DisplayApp& displayApp,
+             Controllers::Settings& settingsController)
   : infiniSleepController {infiniSleepController},
     wakeLock(systemTask),
     motorController {motorController},
     clockType {clockType},
-    displayApp {displayApp} {
+    displayApp {displayApp},
+    settingsController {settingsController} {
 
   infiniSleepController.infiniSleepSettings.heartRateTracking = false;
   infiniSleepController.SetSettingsChanged();
@@ -510,9 +512,22 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       return;
     }
     if (obj == trackerToggleBtn) {
-      infiniSleepController.ToggleTracker();
-      UpdateDisplay();
-      return;
+      if (obj == trackerToggleBtn) {
+        bool wasEnabled = infiniSleepController.IsTrackerEnabled();
+        infiniSleepController.ToggleTracker();
+
+        // If we just enabled it, set HR interval to 2 minutes
+        if (!wasEnabled && infiniSleepController.IsTrackerEnabled()) {
+          settingsController.SetHeartRateBackgroundMeasurementInterval(2 * 60);
+        }
+        // If we just disabled it, set HR interval to 10 minutes
+        else if (wasEnabled && !infiniSleepController.IsTrackerEnabled()) {
+          settingsController.SetHeartRateBackgroundMeasurementInterval(10 * 60);
+        }
+
+        UpdateDisplay();
+        return;
+}
     }
     if (obj == btnSuggestedAlarm) {
       // Set the suggested time

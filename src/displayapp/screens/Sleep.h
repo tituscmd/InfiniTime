@@ -19,7 +19,8 @@ namespace Pinetime {
                        Controllers::Settings::ClockType clockType,
                        System::SystemTask& systemTask,
                        Controllers::MotorController& motorController,
-                       DisplayApp& displayApp);
+                       DisplayApp& displayApp,
+                       Controllers::Settings& settingsController);
         ~Sleep() override;
         void Refresh() override;
         void SetAlerting();
@@ -46,6 +47,7 @@ namespace Pinetime {
         Controllers::MotorController& motorController;
         Controllers::Settings::ClockType clockType;
         DisplayApp& displayApp;
+        Controllers::Settings& settingsController;
 
         lv_obj_t *btnStop, *txtStop, *txtSnooze, /**btnRecur, *txtRecur,*/ *btnInfo, *enableSwitch;
         lv_obj_t *trackerToggleBtn, *trackerToggleLabel;
@@ -100,7 +102,8 @@ namespace Pinetime {
                                   controllers.settingsController.GetClockType(),
                                   *controllers.systemTask,
                                   controllers.motorController,
-                                  *controllers.displayApp);
+                                  *controllers.displayApp,
+                                  controllers.settingsController);
       }
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

@@ -32,7 +32,7 @@ namespace Pinetime {
           {.intervalInSeconds = 0, .name = "Cont"},
           {.intervalInSeconds = 30, .name = " 30s"},
           {.intervalInSeconds = 60, .name = "  1m"},
-          {.intervalInSeconds = 5 * 60, .name = "  5m"},
+          {.intervalInSeconds = 2 * 60, .name = "  2m"},
           {.intervalInSeconds = 10 * 60, .name = " 10m"},
           {.intervalInSeconds = 30 * 60, .name = " 30m"},
         }};
