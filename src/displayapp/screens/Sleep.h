@@ -42,8 +42,9 @@ namespace Pinetime {
 
         lv_obj_t* btnSnooze;
 
-      private:
         System::WakeLock wakeLock;
+
+      private:
         Controllers::MotorController& motorController;
         Controllers::Settings::ClockType clockType;
         DisplayApp& displayApp;
@@ -55,6 +56,7 @@ namespace Pinetime {
         lv_obj_t* txtMessage = nullptr;
         lv_obj_t* btnMessage = nullptr;
         lv_task_t* taskSnoozeWakeAlarm = nullptr;
+        lv_task_t* taskWakeLockTimeout = nullptr;
 
         lv_task_t* taskRefresh = nullptr;
 

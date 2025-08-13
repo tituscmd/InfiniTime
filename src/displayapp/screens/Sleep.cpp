@@ -31,6 +31,12 @@ namespace {
     screen->ignoreButtonPush = false;
   }
 
+  void WakeLockTimeoutCallback(lv_task_t* task) {
+    lv_task_set_prio(task, LV_TASK_PRIO_OFF);
+    auto* screen = static_cast<Sleep*>(task->user_data);
+    screen->wakeLock.Release();
+  }
+
   void PressesToStopAlarmTimeoutCallback(lv_task_t* task) {
     auto* screen = static_cast<Sleep*>(task->user_data);
     screen->infiniSleepController.pushesLeftToStopWakeAlarm = screen->infiniSleepController.infiniSleepSettings.pushesToStopAlarm;
@@ -497,6 +503,7 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     }
     if (obj == btnStop) {
       StopAlarmPush();
+      settingsController.SetHeartRateBackgroundMeasurementInterval(10 * 60);
       return;
     }
     if (obj == enableSwitch) {
@@ -733,7 +740,15 @@ void Sleep::UpdateWakeAlarmTime() {
 
 void Sleep::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
-  lv_obj_set_hidden(btnSnooze, false);
+  if (!infiniSleepController.infiniSleepSettings.naturalWake) {
+    lv_obj_set_hidden(btnSnooze, false);
+    lv_obj_set_size(btnStop, 130, 50);
+    lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  } else {
+    lv_obj_set_hidden(btnSnooze, true);
+    lv_obj_set_size(btnStop, 200, 63);
+    lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_CENTER, 0, 58);
+  }
   lv_obj_set_hidden(btnStop, false);
   lv_obj_set_hidden(btnSuggestedAlarm, true);
   lv_obj_set_hidden(txtSuggestedAlarm, true);
@@ -744,7 +759,9 @@ void Sleep::SetAlerting() {
       lv_task_del(taskSnoozeWakeAlarm);
       taskSnoozeWakeAlarm = nullptr;
     }
-    taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, 120 * 1000, LV_TASK_PRIO_MID, this);
+    taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, 60 * 1000, LV_TASK_PRIO_MID, this);
+  } else {
+    taskWakeLockTimeout = lv_task_create(WakeLockTimeoutCallback, 60 * 1000, LV_TASK_PRIO_MID, this);
   }
   if (infiniSleepController.infiniSleepSettings.naturalWake) {
     motorController.StartNaturalWakeAlarm();
@@ -757,7 +774,15 @@ void Sleep::SetAlerting() {
 
 void Sleep::RedrawSetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
-  lv_obj_set_hidden(btnSnooze, false);
+  if (!infiniSleepController.infiniSleepSettings.naturalWake) {
+    lv_obj_set_hidden(btnSnooze, false);
+    lv_obj_set_size(btnStop, 130, 50);
+    lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  } else {
+    lv_obj_set_hidden(btnSnooze, true);
+    lv_obj_set_size(btnStop, 200, 63);
+    lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_CENTER, 0, 58);
+  }
   lv_obj_set_hidden(btnStop, false);
   lv_obj_set_hidden(btnSuggestedAlarm, true);
   lv_obj_set_hidden(txtSuggestedAlarm, true);

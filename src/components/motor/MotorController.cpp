@@ -39,7 +39,7 @@ void MotorController::Init() {
   notifVib = xTimerCreate("notifVib", 1, pdFALSE, nullptr, StopMotor);
   alarmVib1 = xTimerCreate("alarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, AlarmRing1);
   alarmVib2 = xTimerCreate("alarmVib2", pdMS_TO_TICKS(100), pdFALSE, this, AlarmRing2);
-  alarmVib3 = xTimerCreate("alarmVib3", pdMS_TO_TICKS(100), pdFALSE, this, AlarmRing3);
+  alarmVib3 = xTimerCreate("alarmVib3", pdMS_TO_TICKS(110), pdFALSE, this, AlarmRing3);
   callVib1 = xTimerCreate("callVib", pdMS_TO_TICKS(1000), pdTRUE, this, CallRing1);
   callVib2 = xTimerCreate("callVib2", pdMS_TO_TICKS(150), pdFALSE, this, CallRing2);
   timerVib1 = xTimerCreate("timerVib", pdMS_TO_TICKS(1000), pdTRUE, this, TimerRing1);
@@ -65,13 +65,17 @@ void MotorController::SetMotorStrength(uint8_t strength) {
 }
 
 void MotorController::StartWakeAlarm() {
+  /*
   wakeAlarmStrength = (80 * infiniSleepMotorStrength) / 100;
   wakeAlarmDuration = 100;
   SetMotorStrength(wakeAlarmStrength);
   RunForDuration(wakeAlarmDuration);
   xTimerStart(wakeAlarmVib, 0);
+  */
+  xTimerStart(alarmVib1, 0);
 }
 
+// this sucks
 void MotorController::WakeAlarmRing(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
   if (motorController->wakeAlarmStrength > (40 * motorController->infiniSleepMotorStrength) / 100) {
@@ -85,7 +89,8 @@ void MotorController::WakeAlarmRing(TimerHandle_t xTimer) {
 }
 
 void MotorController::StopWakeAlarm() {
-  xTimerStop(wakeAlarmVib, 0);
+  // xTimerStop(wakeAlarmVib, 0);
+  xTimerStop(alarmVib1, 0);
   nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_STOP); // Stop the PWM sequence
   pwmValue = 0;                                      // Reset the PWM value
   nrf_gpio_pin_set(PinMap::Motor);
@@ -138,7 +143,7 @@ void MotorController::AlarmRing2(TimerHandle_t xTimer) {
 
 void MotorController::AlarmRing3(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(35);
+  motorController->RunForDuration(50);
 }
 
 // 50ms double buzz with 150ms gap, every 1 second
