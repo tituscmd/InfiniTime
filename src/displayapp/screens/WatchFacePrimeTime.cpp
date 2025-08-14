@@ -240,6 +240,17 @@ void WatchFacePrimeTime::Refresh() {
     lv_obj_realign(weatherIcon);
   }
 
+  static constexpr uint32_t secondsInADay = 60 * 60 * 24;
+  static constexpr uint32_t secondsInAnHour = 60 * 60;
+  static constexpr uint32_t secondsInAMinute = 60;
+  uint32_t uptimeSeconds = dateTimeController.Uptime().count();
+  uint32_t uptimeDays = (uptimeSeconds / secondsInADay);
+  uptimeSeconds = uptimeSeconds % secondsInADay;
+  uint32_t uptimeHours = uptimeSeconds / secondsInAnHour;
+  uptimeSeconds = uptimeSeconds % secondsInAnHour;
+  uint32_t uptimeMinutes = uptimeSeconds / secondsInAMinute;
+  uptimeSeconds = uptimeSeconds % secondsInAMinute;
+
   // activity bar
   if (infiniSleepController.IsEnabled()) {
     lv_label_set_text_fmt(labelActivityBar, "%s Sleeping...", Symbols::bed);
@@ -252,7 +263,13 @@ void WatchFacePrimeTime::Refresh() {
     track = musicService.getTrack();
     lv_label_set_text_fmt(labelActivityBar, "%s %s", Symbols::music, track.data());
   } else {
-    lv_label_set_text_fmt(labelActivityBar, "%s On my break", Symbols::coffee);
+    lv_label_set_text_fmt(labelActivityBar, "%s %02lud %02lu:%02lu:%02lu",
+                        Symbols::arrowsRotate,
+                        uptimeDays,
+                        uptimeHours,
+                        uptimeMinutes,
+                        uptimeSeconds);
+    lv_obj_realign(labelActivityBar);
   }
   lv_obj_realign(labelActivityBar);
 }

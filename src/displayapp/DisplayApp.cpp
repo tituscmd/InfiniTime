@@ -162,6 +162,7 @@ void DisplayApp::Init() {
   brightnessController.Init();
   ApplyBrightness();
   lvgl.Init();
+  heartRateController.Enable();
 }
 
 TickType_t DisplayApp::CalculateSleepTime() {

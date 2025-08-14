@@ -43,7 +43,8 @@ namespace Pinetime {
         static constexpr const char* calculator = "\xEF\x87\xAC";
         static constexpr const char* backspace = "\xEF\x95\x9A";
         static constexpr const char* sliders = "\xEF\x87\x9E";
-        static constexpr const char* coffee = "\xEF\x9E\xB6";
+        static constexpr const char* coffee = "\xEF\x9E\xB6"; // unused currently, still cool emoji so ill keep it
+        static constexpr const char* arrowsRotate = "\xEF\x80\xA1"; // used for uptime showcase in Activity Bar
 
         // fontawesome_weathericons.c
         // static constexpr const char* sun = "\xEF\x86\x85";
