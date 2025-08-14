@@ -252,7 +252,7 @@ void WatchFacePrimeTime::Refresh() {
     track = musicService.getTrack();
     lv_label_set_text_fmt(labelActivityBar, "%s %s", Symbols::music, track.data());
   } else {
-    lv_label_set_text_fmt(labelActivityBar, "%s Waiting...", Symbols::coffee);
+    lv_label_set_text_fmt(labelActivityBar, "%s On my break", Symbols::coffee);
   }
   lv_obj_realign(labelActivityBar);
 }

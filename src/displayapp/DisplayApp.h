@@ -141,6 +141,8 @@ namespace Pinetime {
 
       bool isDimmed = false;
 
+      bool forceAOD = false;
+
       TickType_t CalculateSleepTime();
       TickType_t alwaysOnFrameCount;
       TickType_t alwaysOnStartTime;

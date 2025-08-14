@@ -299,6 +299,22 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
     switch (msg) {
       case Messages::OnChargingEvent:
+        if (batteryController.IsCharging() && (currentApp == Apps::Launcher || currentApp == Apps::Notifications || currentApp == Apps::QuickSettings ||
+            currentApp == Apps::Settings || currentApp == Apps::Clock)) {
+          LoadNewScreen(Apps::BatteryInfo, DisplayApp::FullRefreshDirections::None);
+          settingsController.SetNotificationStatus(Controllers::Settings::Notification::Off);
+          forceAOD = true;
+          PushMessage(Messages::GoToAOD);
+        } else if (!batteryController.IsCharging() && currentApp == Apps::BatteryInfo) {
+          LoadPreviousScreen();
+          settingsController.SetNotificationStatus(Controllers::Settings::Notification::On);
+          PushMessage(Messages::GoToRunning);
+          forceAOD = false;
+        } else {
+          // Vibrate normally otherwise as to not close any open app, for example any game app
+          motorController.NotifBuzz();
+        }
+        break;
       case Messages::GoToSleep:
       case Messages::GoToAOD:
         // Checking if SystemTask is sleeping is purely an optimisation.
@@ -307,7 +323,7 @@ void DisplayApp::Refresh() {
         // GoingToSleep->Running, so we are about to receive GoToRunning
         // and can ignore this message. If it wasn't ignored, DisplayApp
         // would go to sleep and then immediately re-wake
-        if (state != States::Running || !systemTask->IsSleeping()) {
+        if (!forceAOD && (state != States::Running || !systemTask->IsSleeping())) {
           break;
         }
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Low) {

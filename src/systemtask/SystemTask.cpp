@@ -351,6 +351,7 @@ void SystemTask::Work() {
         case Messages::OnChargingEvent:
           batteryController.ReadPowerState();
           GoToRunning();
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::OnChargingEvent);
           break;
         case Messages::MeasureBatteryTimerExpired:
           batteryController.MeasureVoltage();
