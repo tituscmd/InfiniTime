@@ -198,3 +198,24 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object) {
     app->StartApp(Apps::Settings, DisplayApp::FullRefreshDirections::Up);
   }
 }
+
+bool QuickSettings::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  switch (event) {
+    case TouchEvents::SwipeUp:
+      settingsController.SetSettingsMenu(0);
+      app->StartApp(Apps::Settings, DisplayApp::FullRefreshDirections::Up);
+      return true;
+
+    case TouchEvents::None:
+    case TouchEvents::Tap:
+    case TouchEvents::SwipeLeft:
+    case TouchEvents::SwipeRight:
+    case TouchEvents::SwipeDown:
+    case TouchEvents::LongTap:
+    case TouchEvents::DoubleTap:
+    default:
+      break; // ignore
+  }
+
+  return false;
+}
