@@ -521,12 +521,12 @@ void DisplayApp::Refresh() {
         }
         break;
       case Messages::ButtonLongerPressed:
-        // Create reboot app and open it instead
+        // TODO: Create reboot app and open it instead
         LoadNewScreen(Apps::SysInfo, DisplayApp::FullRefreshDirections::Up);
         break;
       case Messages::ButtonDoubleClicked:
-        if (!infiniSleepController.IsAlerting() && currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
-          LoadNewScreen(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
+        if (!infiniSleepController.IsAlerting() && currentApp != Apps::FlashLight && currentApp != Apps::NotificationsPreview) {
+          LoadNewScreen(Apps::FlashLight, DisplayApp::FullRefreshDirections::Up);
         }
         break;
 

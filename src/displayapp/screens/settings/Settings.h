@@ -40,7 +40,7 @@ namespace Pinetime {
           {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
           {Symbols::heartBeat, "HRM interval", Apps::SettingHeartRate},
           {Symbols::check, "Firmware", Apps::FirmwareValidation},
-          {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
+          {Symbols::list, "About", Apps::SysInfo},
           
           {Symbols::clock, "Date & Time", Apps::SettingSetDateTime},
           {Symbols::clock, "Time format", Apps::SettingTimeFormat},
@@ -50,7 +50,7 @@ namespace Pinetime {
           //{Symbols::sliders, "Chime strength", Apps::SettingChimeVibration},
           //{Symbols::sliders, "Notif. str.", Apps::SettingNotifVibration},
           {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
-          {Symbols::list, "About", Apps::SysInfo},
+          //{Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
           
           //{Symbols::none, "None", Apps::None},
           //{Symbols::none, "None", Apps::None},

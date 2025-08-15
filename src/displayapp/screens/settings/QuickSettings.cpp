@@ -25,6 +25,11 @@ namespace {
     NotificationsOff = LV_STATE_DEFAULT,
     Sleep = 0x40,
   };
+
+  enum class ButtonState2 : lv_state_t {
+    bluetoothOn = LV_STATE_CHECKED,
+    bluetoothOff = LV_STATE_DEFAULT,
+  };
 }
 
 QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
@@ -83,7 +88,22 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_t* lbl_btn;
   lbl_btn = lv_label_create(btn2, nullptr);
   lv_obj_set_style_local_text_font(lbl_btn, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);
-  lv_label_set_text_static(lbl_btn, Symbols::flashlight);
+
+  // assign styles like btn3 does (per state)
+  lv_obj_set_style_local_bg_color(btn2, LV_BTN_PART_MAIN,
+                                  static_cast<lv_state_t>(ButtonState2::bluetoothOn),
+                                  lv_color_hex(0x007AFF));
+  lv_obj_set_style_local_bg_color(btn2, LV_BTN_PART_MAIN,
+                                  static_cast<lv_state_t>(ButtonState2::bluetoothOff),
+                                  Colors::bgAlt);
+
+  if (settingsController.GetBleRadioEnabled()) {
+    lv_label_set_text_static(lbl_btn, Symbols::bluetoothOn);
+    lv_obj_set_state(btn2, static_cast<lv_state_t>(ButtonState2::bluetoothOn));
+  } else {
+    lv_label_set_text_static(lbl_btn, Symbols::bluetoothOff);
+    lv_obj_set_state(btn2, static_cast<lv_state_t>(ButtonState2::bluetoothOff));
+  }
 
   btn3 = lv_btn_create(lv_scr_act(), nullptr);
   btn3->user_data = this;
@@ -138,7 +158,18 @@ void QuickSettings::UpdateScreen() {
 
 void QuickSettings::OnButtonEvent(lv_obj_t* object) {
   if (object == btn2) {
-    app->StartApp(Apps::FlashLight, DisplayApp::FullRefreshDirections::Up);
+    if (settingsController.GetBleRadioEnabled()) {
+      settingsController.SetBleRadioEnabled(false);
+      this->app->PushMessage(Pinetime::Applications::Display::Messages::BleRadioEnableToggle);
+      lv_label_set_text_static(lv_obj_get_child(btn2, nullptr), Symbols::bluetoothOff);
+      lv_obj_set_state(btn2, static_cast<lv_state_t>(ButtonState2::bluetoothOff));
+    } else {
+      settingsController.SetBleRadioEnabled(true);
+      this->app->PushMessage(Pinetime::Applications::Display::Messages::BleRadioEnableToggle);
+      lv_label_set_text_static(lv_obj_get_child(btn2, nullptr), Symbols::bluetoothOn);
+      lv_obj_set_state(btn2, static_cast<lv_state_t>(ButtonState2::bluetoothOn));
+    }
+    statusIcons.Update();
   } else if (object == btn1) {
 
     brightness.Step();
