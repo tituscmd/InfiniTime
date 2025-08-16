@@ -26,7 +26,7 @@ void StatusIcons::Create() {
   lv_obj_set_style_local_text_font(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 
   alarmIcon = lv_label_create(container, nullptr);
-  lv_label_set_text_static(alarmIcon, Screens::Symbols::bell);
+  lv_label_set_text_static(alarmIcon, Screens::Symbols::alarmClock);
   lv_obj_set_style_local_text_font(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
 
   batteryIcon.Create(container);
