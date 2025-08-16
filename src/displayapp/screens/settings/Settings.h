@@ -40,7 +40,7 @@ namespace Pinetime {
           {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
           {Symbols::heartBeat, "HRM interval", Apps::SettingHeartRate},
           {Symbols::check, "Firmware", Apps::FirmwareValidation},
-          {Symbols::list, "About", Apps::SysInfo},
+          {Symbols::microchip, "System info", Apps::SysInfo},
           
           {Symbols::clock, "Date & Time", Apps::SettingSetDateTime},
           {Symbols::clock, "Time format", Apps::SettingTimeFormat},
