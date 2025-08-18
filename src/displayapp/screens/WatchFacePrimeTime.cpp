@@ -264,7 +264,7 @@ void WatchFacePrimeTime::Refresh() {
     lv_label_set_text_fmt(labelActivityBar, "%s %s", Symbols::music, track.data());
   } else {
     lv_label_set_text_fmt(labelActivityBar, "%s %02lud %02lu:%02lu:%02lu",
-                        Symbols::arrowsRotate,
+                        Symbols::rotate,
                         uptimeDays,
                         uptimeHours,
                         uptimeMinutes,

@@ -6,11 +6,11 @@
             "range": "0x20-0x7e, 0x410-0x44f, 0xB0, 0xBF, 0xFFFD, 0x00E4, 0x00F6, 0x00FC, 0x00C4, 0x00D6, 0x00DC, 0x00DF, 0x20AC, 0x2018, 0x2019, 0x201E, 0x201C, 0x201D, 0x2026"
          },
          {
-            "file": "FontAwesome6-Solid.ttf",
-            "range": "0xF55A, 0xF001, 0xF252, 0xF7B6, 0xf236, 0xf021"
+            "file": "FontAwesome7-Solid.otf",
+            "range": "0xF55A, 0xF001, 0xF252, 0xF7B6, 0xf236, 0xf2f1"
          },
          {
-            "file": "FontAwesome6-Brands.ttf",
+            "file": "FontAwesome7-Brands.otf",
             "range": "0xf294"
          }
       ],
@@ -95,7 +95,7 @@
    "fontawesome_weathericons": {
       "sources": [
          {
-            "file": "FontAwesome6-Solid.ttf",
+            "file": "FontAwesome7-Solid.otf",
             "range": "0xf185, 0xf6c4, 0xf743, 0xf740, 0xf75f, 0xf0c2, 0xf05e, 0xf73b, 0xf76c, 0xf2dc"
          }
       ],
@@ -105,7 +105,7 @@
    "hrm_icon": {
       "sources": [
          {
-            "file": "FontAwesome6-Solid.ttf",
+            "file": "FontAwesome7-Solid.otf",
             "range": "0xf004"
          }
       ],
