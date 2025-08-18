@@ -46,8 +46,6 @@ void MotorController::Init() {
   timerVib2 = xTimerCreate("timerVib2", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing2);
   timerVib3 = xTimerCreate("timerVib3", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing3);
   timerVib4 = xTimerCreate("timerVib4", pdMS_TO_TICKS(100), pdFALSE, this, TimerRing4);
-  chimeVib1 = xTimerCreate("chimeVib1", 1, pdFALSE, this, ChimeRing1);
-  chimeVib2 = xTimerCreate("chimeVib2", pdMS_TO_TICKS(100), pdFALSE, this, ChimeRing2);
   wakeAlarmVib = xTimerCreate("wakeAlarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, WakeAlarmRing);
   naturalWakeAlarmVib = xTimerCreate("natWakeVib", pdMS_TO_TICKS(30 * 1000), pdTRUE, this, NaturalWakeAlarmRing);
   chimeVib1 = xTimerCreate("chimeVib1", 1, pdFALSE, this, ChimeRing1);
