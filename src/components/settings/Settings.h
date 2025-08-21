@@ -63,12 +63,10 @@ namespace Pinetime {
       enum class HeartRateBackgroundMeasurementInterval : uint8_t {
         Off,
         Continuous,
-        FifteenSeconds,
-        ThirtySeconds,
         OneMinute,
         TwoMinutes,
-        TenMinutes,
-        ThirtyMinutes
+        FiveMinutes,
+        TenMinutes
       };
 
       Settings(Pinetime::Controllers::FS& fs);

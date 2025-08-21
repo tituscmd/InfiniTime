@@ -27,14 +27,13 @@ namespace Pinetime {
 
         Pinetime::Controllers::Settings& settingsController;
 
-        static constexpr std::array<Option, 7> options = {{
+        static constexpr std::array<Option, 6> options = {{
           {.intervalInSeconds = std::nullopt, .name = " Off"},
           {.intervalInSeconds = 0, .name = "Cont"},
-          {.intervalInSeconds = 30, .name = " 30s"},
           {.intervalInSeconds = 60, .name = "  1m"},
           {.intervalInSeconds = 2 * 60, .name = "  2m"},
+          {.intervalInSeconds = 5 * 60, .name = "  5m"},
           {.intervalInSeconds = 10 * 60, .name = " 10m"},
-          {.intervalInSeconds = 30 * 60, .name = " 30m"},
         }};
 
         lv_obj_t* cbOption[options.size()];
