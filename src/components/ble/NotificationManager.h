@@ -4,6 +4,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <string>   // added
 
 namespace Pinetime {
   namespace Controllers {
@@ -35,6 +36,9 @@ namespace Pinetime {
         bool valid = false;
 
         uint32_t ancsUid = 0;
+
+        // new field to store ANCS app identifier (bundle ID)
+        std::string appId;
 
         const char* Message() const;
         const char* Title() const;

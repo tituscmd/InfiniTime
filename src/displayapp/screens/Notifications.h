@@ -3,6 +3,7 @@
 #include <lvgl/lvgl.h>
 #include <FreeRTOS.h>
 #include <cstdint>
+#include <string>
 #include <memory>
 #include "displayapp/screens/Screen.h"
 #include "components/ble/NotificationManager.h"

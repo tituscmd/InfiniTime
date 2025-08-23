@@ -298,17 +298,18 @@ Notifications::NotificationItem::NotificationItem(const char* title,
 
   lv_obj_t* alert_type = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
-  if (title == nullptr) {
-    lv_label_set_text_static(alert_type, "Notification");
-  } else {
-    // copy title to label and replace newlines with spaces
-    lv_label_set_text(alert_type, title);
+
+  if (title != nullptr) {
+    lv_label_set_text(alert_type, title);   // will already be "[appid] Title"
+    // Replace newlines with spaces, just in case
     char* pchar = strchr(lv_label_get_text(alert_type), '\n');
     while (pchar != nullptr) {
       *pchar = ' ';
       pchar = strchr(pchar + 1, '\n');
     }
     lv_label_refr_text(alert_type);
+  } else {
+    lv_label_set_text_static(alert_type, ""); // nothing if completely null
   }
   lv_label_set_long_mode(alert_type, LV_LABEL_LONG_SROLL_CIRC);
   lv_obj_set_width(alert_type, 180);

@@ -236,7 +236,7 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     uint8_t titleSize = maxTitleSize + 4;
     uint8_t subTitleSize = maxSubtitleSize + 4;
     uint8_t messageSize = maxMessageSize + 4;
-    BYTE request[14];
+    BYTE request[16];
     request[0] = 0x00; // Command ID: Get Notification Attributes
     request[1] = (uint8_t) (notificationUuid & 0xFF);
     request[2] = (uint8_t) ((notificationUuid >> 8) & 0xFF);
@@ -252,6 +252,8 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     request[11] = 0x03; // Attribute ID: Message
     request[12] = (messageSize & 0xFF);
     request[13] = ((messageSize >> 8) & 0xFF);
+    request[14] = 0x0; // [ADDED] Attribute ID: AppIdentifier
+    request[15] = 0x00; // no max length parameter
 
     ble_gattc_write_flat(event->notify_rx.conn_handle, controlPointHandle, request, sizeof(request), OnControlPointWriteCallback, this);
 
@@ -269,111 +271,88 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     // systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
     // DebugNotification("ANCS Notification received");
   } else if (event->notify_rx.attr_handle == dataSourceHandle || event->notify_rx.attr_handle == dataSourceDescriptorHandle) {
-    uint16_t titleSize;
-    uint16_t subTitleSize;
-    uint16_t messageSize;
     uint32_t notificationUid;
-
     os_mbuf_copydata(event->notify_rx.om, 1, 4, &notificationUid);
-    os_mbuf_copydata(event->notify_rx.om, 6, 2, &titleSize);
-    os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1, 2, &subTitleSize);
-    os_mbuf_copydata(event->notify_rx.om, 8 + titleSize + 1 + 2 + subTitleSize + 1, 2, &messageSize);
 
     AncsNotitfication ancsNotif;
     ancsNotif.uuid = 0;
-
     if (notifications.contains(notificationUid)) {
       ancsNotif = notifications[notificationUid];
     }
 
-    std::string decodedTitle = DecodeUtf8String(event->notify_rx.om, titleSize, 8);
+    std::string decodedAppId;
+    std::string decodedTitle;
+    std::string decodedSubTitle;
+    std::string decodedMessage;
 
-    std::string decodedSubTitle = DecodeUtf8String(event->notify_rx.om, subTitleSize, 8 + titleSize + 1 + 2);
+    // Walk through attributes as per ANCS spec
+    size_t offset = 5; // after UID (1 + 4 bytes)
+    while (offset < OS_MBUF_PKTLEN(event->notify_rx.om)) {
+        uint8_t attrId;
+        uint16_t attrLen;
 
-    std::string decodedMessage = DecodeUtf8String(event->notify_rx.om, messageSize, 8 + titleSize + 1 + 2 + subTitleSize + 1 + 2);
+        if (os_mbuf_copydata(event->notify_rx.om, offset, 1, &attrId) != 0) break;
+        if (os_mbuf_copydata(event->notify_rx.om, offset + 1, 2, &attrLen) != 0) break;
 
+        std::string value = DecodeUtf8String(event->notify_rx.om, attrLen, offset + 3);
+
+        switch(attrId) {
+          case 0x00: decodedAppId = value; break;
+          case 0x01: decodedTitle = value; break;
+          case 0x02: decodedSubTitle = value; break;
+          case 0x03: decodedMessage = value; break;
+        }
+
+        offset += 3 + attrLen;
+    }
+
+    NRF_LOG_INFO("Decoded AppId: %s", decodedAppId.c_str());
     NRF_LOG_INFO("Decoded Title: %s", decodedTitle.c_str());
     NRF_LOG_INFO("Decoded SubTitle: %s", decodedSubTitle.c_str());
-    // DebugNotification(decodedTitle.c_str());
-    // DebugNotification("ANCS Data Source received");
+    NRF_LOG_INFO("Decoded Msg: %s", decodedMessage.c_str());
 
     bool incomingCall = ancsNotif.uuid != 0 && ancsNotif.category == static_cast<uint8_t>(Categories::IncomingCall);
 
     if (!incomingCall) {
-      if (titleSize >= maxTitleSize) {
-        /*decodedTitle.resize(maxTitleSize - 3);
-        decodedTitle += "...";*/
-        if (!decodedSubTitle.empty()) {
-          decodedTitle += " - ";
-        } else {
-          decodedTitle += "-";
-        }
-      } else {
-        if (!decodedSubTitle.empty()) {
-          decodedTitle += " - ";
-        } else {
-          decodedTitle += "-";
-        }
-      }
-
-      if (subTitleSize > maxSubtitleSize) {
+      if (decodedSubTitle.size() > maxSubtitleSize) {
         decodedSubTitle.resize(maxSubtitleSize - 3);
         decodedSubTitle += "...";
       }
-
-      // if (messageSize > maxMessageSize) {
-      //   decodedMessage.resize(maxMessageSize - 3);
-      //   decodedMessage += "...";
-      // }
+      if (decodedMessage.size() > maxMessageSize) {
+        decodedMessage.resize(maxMessageSize - 3);
+        decodedMessage += "...";
+      }
     }
-
-    titleSize = static_cast<uint16_t>(decodedTitle.size());
-    subTitleSize = static_cast<uint16_t>(decodedSubTitle.size());
-    messageSize = static_cast<uint16_t>(decodedMessage.size());
 
     NotificationManager::Notification notif;
     notif.ancsUid = notificationUid;
-    // std::string notifStr = "iOS Notif.:" + decodedTitle + "\n" + decodedSubTitle;
-    std::string notifStr;
+    notif.appId  = decodedAppId;
 
+    std::string notifStr;
     if (incomingCall) {
-      notifStr += "Incoming Call:";
-      notifStr += decodedTitle;
-      notifStr += "\n";
-      notifStr += decodedSubTitle;
+      notifStr = "Incoming Call: " + decodedTitle + "\n" + decodedSubTitle;
     } else {
-      notifStr += decodedTitle;
-      if (!decodedSubTitle.empty()) {
-        notifStr += decodedSubTitle + ":";
-      }
-      notifStr += decodedMessage;
+      notifStr = "[" + decodedAppId + "] " + decodedTitle + "\n" + decodedMessage;
     }
 
-    // Adjust notification if too long
     if (notifStr.size() > 100) {
       notifStr.resize(97);
       notifStr += "...";
     }
 
-    notif.message = std::array<char, 101> {};
+    notif.message = std::array<char, 101>{};
     std::strncpy(notif.message.data(), notifStr.c_str(), notif.message.size() - 1);
 
-    if (incomingCall)
-      notif.message[13] = '\0'; // Seperate Title and Message
-    else if (!decodedSubTitle.empty())
-      notif.message[titleSize + subTitleSize] = '\0'; // Seperate Title and Message
-    else
-      notif.message[titleSize - 1] = '\0'; // Seperate Title and Message
-
-    notif.message[notif.message.size() - 1] = '\0'; // Ensure null-termination
-    notif.size = std::min(std::strlen(notifStr.c_str()), notif.message.size());
-    if (incomingCall) {
-      notif.category = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
-    } else {
-      notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    size_t lineBreak = notifStr.find('\n');
+    if (lineBreak != std::string::npos && lineBreak < notif.message.size() - 1) {
+      notif.message[lineBreak] = '\0';
     }
-    notificationManager.Push(std::move(notif));
 
+    notif.size = std::min(notifStr.size(), notif.message.size() - 1);
+    notif.category = incomingCall ? Pinetime::Controllers::NotificationManager::Categories::IncomingCall
+                                  : Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+
+    notificationManager.Push(std::move(notif));
     systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
   }
 }
