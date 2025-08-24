@@ -223,9 +223,8 @@ std::string AppleNotificationCenterClient::AppIdToEmoji(const std::string& appId
   if (appId == "com.toyopagroup.picaboo")
     return Pinetime::Applications::Screens::Symbols::snapchatLogo;
 
-  if (appId == "com.openai.chatgpt")
-    // return Pinetime::Applications::Screens::Symbols::chatgptLogo;
-    return appId;
+  if (appId == "com.openai.chat")
+    return Pinetime::Applications::Screens::Symbols::chatgptLogo;
 
   return Pinetime::Applications::Screens::Symbols::none;
 }
