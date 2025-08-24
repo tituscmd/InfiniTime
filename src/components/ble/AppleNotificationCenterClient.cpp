@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "components/ble/NotificationManager.h"
 #include "systemtask/SystemTask.h"
+#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Controllers;
 
@@ -191,6 +192,44 @@ int AppleNotificationCenterClient::OnControlPointWrite(uint16_t /*connectionHand
   return 0;
 }
 
+std::string AppleNotificationCenterClient::AppIdToEmoji(const std::string& appId) {
+  if (appId.rfind("com.apple.", 0) == 0)
+    return Pinetime::Applications::Screens::Symbols::appleLogo;
+
+  if (appId == "net.whatsapp.WhatsApp")
+    return Pinetime::Applications::Screens::Symbols::whatsappLogo;
+
+  if (appId == "org.whispersystems.signal")
+    return Pinetime::Applications::Screens::Symbols::signalLogo;
+
+  if (appId == "com.burbn.instagram")
+    return Pinetime::Applications::Screens::Symbols::instagramLogo;
+
+  if (appId == "com.hammerandchisel.discord")
+    return Pinetime::Applications::Screens::Symbols::discordLogo;
+
+  if (appId == "com.google.ios.youtube")
+    return Pinetime::Applications::Screens::Symbols::youtubeLogo;
+
+  if (appId == "com.reddit.Reddit")
+    return Pinetime::Applications::Screens::Symbols::redditLogo;
+
+  if (appId == "com.atebits.Tweetie2")
+    return Pinetime::Applications::Screens::Symbols::twitterLogo;
+
+  if (appId == "com.duolingo.DuolingoMobile")
+    return Pinetime::Applications::Screens::Symbols::duolingoLogo;
+
+  if (appId == "com.toyopagroup.picaboo")
+    return Pinetime::Applications::Screens::Symbols::snapchatLogo;
+
+  if (appId == "com.openai.chatgpt")
+    // return Pinetime::Applications::Screens::Symbols::chatgptLogo;
+    return appId;
+
+  return Pinetime::Applications::Screens::Symbols::none;
+}
+
 void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
   if (event->notify_rx.attr_handle == notificationSourceHandle || event->notify_rx.attr_handle == notificationSourceDescriptorHandle) {
     NRF_LOG_INFO("ANCS Notification received");
@@ -332,7 +371,7 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
     if (incomingCall) {
       notifStr = "Incoming Call: " + decodedTitle + "\n" + decodedSubTitle;
     } else {
-      notifStr = "[" + decodedAppId + "] " + decodedTitle + "\n" + decodedMessage;
+      notifStr = AppIdToEmoji(decodedAppId) + " " + decodedTitle + "\n" + decodedMessage;
     }
 
     if (notifStr.size() > 100) {

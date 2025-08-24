@@ -47,6 +47,19 @@ namespace Pinetime {
         static constexpr const char* rotate = "\xEF\x8b\xb1"; // used for uptime showcase in Activity Bar
         static constexpr const char* microchip = "\xEF\x8B\x9B";
 
+        // symbols for ANCS notifications
+        static constexpr const char* appleLogo = "\xEF\x85\xB9";
+        static constexpr const char* whatsappLogo = "\xEF\x88\xB2";
+        static constexpr const char* signalLogo = "\xEE\x99\xA3";
+        static constexpr const char* instagramLogo = "\xEF\x85\xAD";
+        static constexpr const char* discordLogo = "\xEF\x8E\x92";
+        static constexpr const char* youtubeLogo = "\xEF\x85\xA7";
+        static constexpr const char* redditLogo = "\xEF\x8A\x81";
+        static constexpr const char* twitterLogo = "\xEF\x82\x99";
+        static constexpr const char* duolingoLogo = "\xEE\xA0\x92";
+        static constexpr const char* snapchatLogo = "\xEF\x8A\xAB";
+        static constexpr const char* chatgptLogo = "\xEE\x9F\x8F";
+
         // fontawesome_weathericons.c
         // static constexpr const char* sun = "\xEF\x86\x85";
         static constexpr const char* cloudSun = "\xEF\x9B\x84";
