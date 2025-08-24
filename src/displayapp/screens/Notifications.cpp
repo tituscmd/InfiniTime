@@ -321,7 +321,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
     lv_obj_set_hidden(alert_symbol, false);
     lv_obj_align(alert_symbol, nullptr, LV_ALIGN_IN_TOP_LEFT, 8, 16);
     lv_obj_align(alert_title, alert_symbol, LV_ALIGN_IN_BOTTOM_LEFT, 30, 0);
-    lv_obj_set_width(alert_title, 160);
+    lv_obj_set_width(alert_title, 155);
   } else {
     lv_obj_set_hidden(alert_symbol, true);
     lv_obj_align(alert_title, nullptr, LV_ALIGN_IN_TOP_LEFT, 8, 16);
@@ -336,7 +336,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   // Subject body below
   lv_obj_t* alert_subject = lv_label_create(subject_container, nullptr);
   lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
-  lv_obj_set_width(alert_subject, LV_HOR_RES);
+  lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
 
   switch (category) {
     default:
