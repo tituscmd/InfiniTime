@@ -293,6 +293,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_cont_set_fit(subject_container, LV_FIT_NONE);
 
   // Split notifStr (stored in title here) into symbol + rest
+  // TODO: non-ancs notifications dont fit this formatting, needs to be adjusted
   std::string notif(title ? title : "");
   std::string symbol, rest;
   auto pos = notif.find(' ');
