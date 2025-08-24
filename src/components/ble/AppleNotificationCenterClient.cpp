@@ -368,7 +368,7 @@ void AppleNotificationCenterClient::OnNotification(ble_gap_event* event) {
 
     std::string notifStr;
     if (incomingCall) {
-      notifStr = "Incoming Call: " + decodedTitle + "\n" + decodedSubTitle;
+      notifStr = decodedTitle + "\n" + decodedSubTitle;
     } else {
       notifStr = AppIdToEmoji(decodedAppId) + " " + decodedTitle + "\n" + decodedMessage;
     }
