@@ -84,6 +84,7 @@
         "thread": "cpp",
         "cfenv": "cpp",
         "format": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "locale": "cpp"
     }
 }

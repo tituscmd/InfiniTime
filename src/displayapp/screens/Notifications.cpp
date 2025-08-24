@@ -292,14 +292,6 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_cont_set_layout(subject_container, LV_LAYOUT_COLUMN_LEFT);
   lv_cont_set_fit(subject_container, LV_FIT_NONE);
 
-  // Top row: symbol + title
-  lv_obj_t* header_cont = lv_cont_create(container, nullptr);
-  lv_obj_set_style_local_bg_color(header_cont, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_set_style_local_border_width(header_cont, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_size(header_cont, LV_HOR_RES, 30);
-  lv_cont_set_layout(header_cont, LV_LAYOUT_OFF);
-  lv_obj_align(header_cont, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 16);
-
   // Split notifStr (stored in title here) into symbol + rest
   std::string notif(title ? title : "");
   std::string symbol, rest;
@@ -311,24 +303,36 @@ Notifications::NotificationItem::NotificationItem(const char* title,
     rest = notif;
   }
 
-  lv_obj_t* alert_count = lv_label_create(header_cont, nullptr);
-  lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
-  lv_obj_align(alert_count, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-
   // Symbol (fixed)
-  lv_obj_t* alert_symbol = lv_label_create(header_cont, nullptr);
+  lv_obj_t* alert_symbol = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(alert_symbol, symbol.c_str());
   lv_obj_set_style_local_text_color(alert_symbol, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
-  lv_obj_set_pos(alert_symbol, 8, 0);
-
+  lv_obj_set_style_local_text_font(alert_symbol, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &icons);
+  
   // Title (scrolling if long)
-  lv_obj_t* alert_title = lv_label_create(header_cont, nullptr);
+  lv_obj_t* alert_title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(alert_title, rest.c_str());
   lv_label_set_long_mode(alert_title, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_set_width(alert_title, 160);
   lv_obj_set_style_local_text_color(alert_title, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
-  lv_obj_set_pos(alert_title, 30, 0);
+  lv_obj_set_auto_realign(alert_title, true);
+  
+  if (symbol != std::string("")) {
+    lv_obj_set_hidden(alert_symbol, false);
+    lv_obj_align(alert_symbol, nullptr, LV_ALIGN_IN_TOP_LEFT, 8, 16);
+    lv_obj_align(alert_title, alert_symbol, LV_ALIGN_IN_BOTTOM_LEFT, 30, 0);
+    lv_obj_set_width(alert_title, 160);
+  } else {
+    lv_obj_set_hidden(alert_symbol, true);
+    lv_obj_align(alert_title, nullptr, LV_ALIGN_IN_TOP_LEFT, 8, 16);
+    lv_obj_set_width(alert_title, 190);
+  }
 
+  // Count at far right
+  lv_obj_t* alert_count = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
+  lv_obj_align(alert_count, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
+
+  // Subject body below
   lv_obj_t* alert_subject = lv_label_create(subject_container, nullptr);
   lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
   lv_obj_set_width(alert_subject, LV_HOR_RES);
